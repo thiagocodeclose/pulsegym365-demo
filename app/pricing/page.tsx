@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { PlanCard } from '@/components/PlanCard';
 import { SectionHeading } from '@/components/SectionHeading';
+import { WidgetZone } from '@/components/WidgetZone';
 import { plans } from '@/lib/site-data';
 
 export default function PricingPage() {
@@ -22,11 +23,13 @@ export default function PricingPage() {
             title="Choose the membership style"
             description="This page is ready to become a dynamic public pricing page. For now, it demonstrates the target visual structure and conversion logic."
           />
-          <div className="plans-grid">
-            {plans.map((plan) => (
-              <PlanCard key={plan.name} plan={plan} />
-            ))}
-          </div>
+          <WidgetZone widgetType="pricing" minHeight={600} label="Pricing">
+            <div className="plans-grid">
+              {plans.map((plan) => (
+                <PlanCard key={plan.name} plan={plan} />
+              ))}
+            </div>
+          </WidgetZone>
         </div>
       </section>
 

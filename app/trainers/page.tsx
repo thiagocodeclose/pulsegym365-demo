@@ -1,5 +1,6 @@
 import { SectionHeading } from '@/components/SectionHeading';
 import { TrainerCard } from '@/components/TrainerCard';
+import { WidgetZone } from '@/components/WidgetZone';
 import { trainers } from '@/lib/site-data';
 
 export default function TrainersPage() {
@@ -21,11 +22,13 @@ export default function TrainersPage() {
             title="Meet the PulseGym coaching team"
             description="This page is intentionally broad because the club offers multiple experiences, from combat sports to mobility, cycling, aquatics, and strength."
           />
-          <div className="trainers-grid">
-            {trainers.map((trainer) => (
-              <TrainerCard key={trainer.name} trainer={trainer} />
-            ))}
-          </div>
+          <WidgetZone widgetType="instructors" minHeight={500} label="Instructors">
+            <div className="trainers-grid">
+              {trainers.map((trainer) => (
+                <TrainerCard key={trainer.name} trainer={trainer} />
+              ))}
+            </div>
+          </WidgetZone>
         </div>
       </section>
     </>

@@ -1,12 +1,14 @@
 'use client';
 
 import { FormEvent, useState } from 'react';
+import { useDemo } from './DemoProvider';
 
 type Result = { ok: boolean; message: string } | null;
 
 export function TrialForm() {
   const [result, setResult] = useState<Result>(null);
   const [loading, setLoading] = useState(false);
+  const { isActive } = useDemo();
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -34,23 +36,52 @@ export function TrialForm() {
     });
 
     const data = (await response.json()) as { ok: boolean; message: string };
-    setResult(data);
-    setLoading(false);
 
-    if (data.ok) {
-      form.reset();
+    if (isActive && data.ok) {
+      setResult({
+        ok: true,
+        message: '✅ Lead captured via Form Bridge → CodeGym pipeline activated: AI follow-up scheduled, SMS drip queued, attribution tracked (source: website, page: free-trial).'
+      });
+    } else {
+      setResult(data);
     }
+
+    setLoading(false);
+    if (data.ok) form.reset();
   }
 
   return (
     <div className="form-shell">
+      {isActive && (
+        <div style={{
+          display: 'inline-flex', alignItems: 'center', gap: '0.4rem',
+          padding: '0.4rem 0.8rem',
+          background: 'rgba(44, 207, 114, 0.12)',
+          border: '1px solid rgba(44, 207, 114, 0.25)',
+          borderRadius: 999, marginBottom: '0.75rem', color: '#2ccf72',
+        }}>
+          <span style={{
+            width: 7, height: 7, borderRadius: '50%',
+            background: '#2ccf72', boxShadow: '0 0 8px #2ccf72',
+            display: 'inline-block',
+          }} />
+          <span style={{ fontSize: '0.75rem', fontWeight: 700 }}>LIVE — Form Bridge active</span>
+        </div>
+      )}
+
       <h2>Start your free trial</h2>
       <p>
-        Demo form ready to simulate the native website bridge. Later, this can post directly into Pulse for lead capture,
-        attribution, AI follow-up, and member onboarding.
+        {isActive
+          ? 'This is the same website form — no changes to the HTML. The Form Bridge intercepts the submission and routes it into the CodeGym lead pipeline with AI follow-up.'
+          : 'Demo form ready to simulate the native website bridge. Later, this can post directly into Pulse for lead capture, attribution, AI follow-up, and member onboarding.'
+        }
       </p>
 
-      <form onSubmit={handleSubmit} className="form-grid">
+      <form
+        onSubmit={handleSubmit}
+        className="form-grid"
+        {...(isActive ? { 'data-codegym-form': '', 'data-gym': 'pulsegym365', 'data-form-type': 'trial_pass' } : {})}
+      >
         <div className="form-row">
           <label htmlFor="firstName">First name</label>
           <input id="firstName" name="firstName" placeholder="Jordan" required />
@@ -101,6 +132,17 @@ export function TrialForm() {
       </form>
 
       {result ? <div className={result.ok ? 'success-box' : 'form-note'}>{result.message}</div> : null}
+
+      {isActive && (
+        <div style={{
+          marginTop: '1rem', padding: '0.75rem 1rem',
+          background: 'rgba(42,109,246,0.08)',
+          border: '1px solid rgba(42,109,246,0.2)',
+          borderRadius: 12, fontSize: '0.78rem', color: '#aaa', lineHeight: 1.6,
+        }}>
+          <strong style={{ color: '#2a6df6' }}>Form Bridge pipeline:</strong> Lead created → AI scores interest → SMS welcome sent → Follow-up scheduled in 24h → If no conversion in 72h, AI re-engages automatically.
+        </div>
+      )}
     </div>
   );
 }

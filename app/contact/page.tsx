@@ -1,5 +1,6 @@
 import { ContactForm } from '@/components/ContactForm';
 import { SectionHeading } from '@/components/SectionHeading';
+import { WidgetZone } from '@/components/WidgetZone';
 import { site } from '@/lib/site-data';
 
 export default function ContactPage() {
@@ -17,19 +18,21 @@ export default function ContactPage() {
 
       <section className="section">
         <div className="container contact-grid">
-          <div className="contact-card">
-            <SectionHeading title="Club details" description="Use this block as the public studio info section or future info widget target." />
-            <p><strong>Address:</strong> {site.address}</p>
-            <p><strong>Phone:</strong> {site.phone}</p>
-            <p><strong>Email:</strong> {site.email}</p>
-            <p><strong>Hours:</strong></p>
-            {site.hours.map((item) => (
-              <p key={item}>{item}</p>
-            ))}
-            <div className="form-note">
-              Tip: later this page can consume dynamic studio info from the system while keeping the overall website structure intact.
+          <WidgetZone widgetType="info" minHeight={400} label="Studio Info">
+            <div className="contact-card">
+              <SectionHeading title="Club details" description="Use this block as the public studio info section or future info widget target." />
+              <p><strong>Address:</strong> {site.address}</p>
+              <p><strong>Phone:</strong> {site.phone}</p>
+              <p><strong>Email:</strong> {site.email}</p>
+              <p><strong>Hours:</strong></p>
+              {site.hours.map((item) => (
+                <p key={item}>{item}</p>
+              ))}
+              <div className="form-note">
+                Tip: later this page can consume dynamic studio info from the system while keeping the overall website structure intact.
+              </div>
             </div>
-          </div>
+          </WidgetZone>
           <ContactForm />
         </div>
       </section>
