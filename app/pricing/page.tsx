@@ -12,15 +12,35 @@ import { comparisonRows, planComparisonRows, plans } from '@/lib/site-data';
 const faqItems = [
   {
     q: 'Can I upgrade my plan later?',
-    a: 'Yes. Members can move between plans as training frequency changes.'
+    a: 'Yes. Members can move between plans at any time as training frequency or goals change. Upgrades take effect on the next billing cycle.'
   },
   {
     q: 'Do classes require reservations?',
-    a: 'Most classes use reservations to secure spots, especially peak evening sessions.'
+    a: 'Most classes use reservations to secure spots, especially peak evening sessions. Walk-ins are welcome when space permits.'
   },
   {
-    q: 'Is there a contract?',
-    a: 'PulseGym offers flexible terms with clear renewal and cancellation policies.'
+    q: 'Is there a contract or commitment period?',
+    a: 'PulseGym offers month-to-month and annual options. Annual plans get a lower monthly rate with no lock-in penalty after the first 3 months.'
+  },
+  {
+    q: 'Can I pause my membership?',
+    a: 'Members can pause for up to 60 days per year for travel, injury, or life events. No fees apply for the first pause request each year.'
+  },
+  {
+    q: 'What happens to unused classes?',
+    a: 'Unused class credits on Starter and Classes+ plans roll over for up to 30 days. After that, the allocation resets with the new billing period.'
+  },
+  {
+    q: 'Is there a joining fee?',
+    a: 'No joining fee for members who sign up online. In-club sign-ups may include a one-time $29 activation fee.'
+  },
+  {
+    q: 'Can I bring a guest?',
+    a: 'Classes+ includes 1 guest pass per month. All Access includes 2, and Performance+ includes 4. Additional passes can be purchased at the front desk.'
+  },
+  {
+    q: 'How do I cancel?',
+    a: 'Cancellations can be submitted online or in-club with 15 days notice before the next billing date. No cancellation fees on month-to-month plans.'
   }
 ];
 

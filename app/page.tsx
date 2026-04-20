@@ -8,18 +8,23 @@ import { FeatureStateCard } from '@/components/FeatureStateCard';
 import { ModeBadge } from '@/components/ModeBadge';
 import { ModeAwareSection } from '@/components/ModeAwareSection';
 import { SectionHeading } from '@/components/SectionHeading';
+import { StatCounter } from '@/components/StatCounter';
 import { TrainerCard } from '@/components/TrainerCard';
 import { useSiteMode } from '@/components/SiteModeProvider';
 import {
   comparisonRows,
   facilities,
   featuredClasses,
+  gymStats,
+  partners,
   plans,
   pulseEnhancements,
   site,
   testimonials,
   trainingStyles,
-  trainers
+  trainers,
+  transformations,
+  weeklySchedule
 } from '@/lib/site-data';
 
 export default function HomePage() {
@@ -67,24 +72,25 @@ export default function HomePage() {
 
       <section className="section metrics-strip">
         <div className="container metrics-strip-grid">
-          <article>
-            <strong>8 training zones</strong>
-            <span>Designed for strength, classes, and recovery in one location.</span>
-          </article>
-          <article>
-            <strong>60+ weekly classes</strong>
-            <span>Morning, midday, and evening blocks built for real schedules.</span>
-          </article>
-          <article>
-            <strong>4.9 member rating</strong>
-            <span>Community-focused coaching and premium facility standards.</span>
-          </article>
-          <article>
-            <strong>All-in-one fitness club</strong>
-            <span>Everything from first trial session to long-term performance goals.</span>
-          </article>
+          {gymStats.map((stat) => (
+            <article key={stat.label}>
+              <StatCounter value={stat.value} suffix={stat.suffix} label={stat.label} />
+            </article>
+          ))}
         </div>
       </section>
+
+      <div className="partners-bar">
+        <div className="container promo-banner-inner">
+          <span className="partners-label">Certified &amp; partnered with</span>
+          {partners.map((p) => (
+            <div key={p.name} className="partner-chip">
+              {p.name}
+              <span className="partner-chip-sub">{p.category}</span>
+            </div>
+          ))}
+        </div>
+      </div>
 
       <ModeAwareSection mode={mode} className="section alt">
         <div className="container">
@@ -106,6 +112,34 @@ export default function HomePage() {
           </div>
         </div>
       </ModeAwareSection>
+
+      <section className="section">
+        <div className="container">
+          <SectionHeading
+            eyebrow="Class schedule"
+            title="60+ weekly classes across 8 training zones"
+            description="Early mornings, midday sessions, and late-night blocks — your schedule always has an option."
+          />
+          <div className="schedule-grid">
+            {weeklySchedule.map((day) => (
+              <div key={day.day} className="schedule-day">
+                <div className="schedule-day-header">{day.day}</div>
+                <div className="schedule-day-slots">
+                  {day.slots.map((slot) => (
+                    <div key={slot.time} className={`schedule-slot accent-${slot.accent}`}>
+                      <time>{slot.time}</time>
+                      <span>{slot.name}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="schedule-cta">
+            <Link href="/classes" className="button button-ghost">View full class catalog &rarr;</Link>
+          </div>
+        </div>
+      </section>
 
       <ModeAwareSection mode={mode} className="section">
         <div className="container">
@@ -211,11 +245,75 @@ export default function HomePage() {
           <div className="testimonial-grid">
             {testimonials.map((item) => (
               <article key={item.name} className="testimonial-card">
-                <blockquote>"{item.quote}"</blockquote>
+                <div className="testimonial-stars" aria-label={`${item.stars} out of 5 stars`}>
+                  {'\u2605'.repeat(item.stars)}
+                </div>
+                <blockquote>&ldquo;{item.quote}&rdquo;</blockquote>
                 <strong>{item.name}</strong>
                 <span>{item.role}</span>
               </article>
             ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="section">
+        <div className="container">
+          <SectionHeading
+            eyebrow="Member results"
+            title="Real members. Real transformations."
+            description="PulseGym members achieve lasting results through coaching structure, class variety, and community accountability."
+          />
+          <div className="transformation-grid">
+            {transformations.map((item) => (
+              <article key={item.name} className={`transformation-card accent-${item.accent}`}>
+                <div className="transformation-result">{item.result}</div>
+                <div className="transformation-meta">
+                  <strong>{item.name}</strong>
+                  <span>{item.timeframe} &middot; {item.plan}</span>
+                </div>
+                <p>{item.story}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="section alt">
+        <div className="container">
+          <SectionHeading
+            eyebrow="Find us"
+            title="Built in Utah. Easy to reach. Hard to leave."
+            description="Central location with covered parking, bike storage, and direct transit access."
+          />
+          <div className="location-grid">
+            <div className="location-map-art">
+              <div className="location-map-inner">
+                <span className="location-address-big">{site.addressLine1}</span>
+                <span className="location-address-sub">{site.addressLine2}</span>
+              </div>
+            </div>
+            <div className="location-details">
+              <div className="location-detail-item">
+                <strong>Address</strong>
+                <p>{site.address}</p>
+              </div>
+              <div className="location-detail-item">
+                <strong>Parking</strong>
+                <p>Free covered parking for 150+ vehicles. Overflow surface lot adjacent to the building.</p>
+              </div>
+              <div className="location-detail-item">
+                <strong>Transit</strong>
+                <p>2 minutes from Lehi TRAX station. Bike lanes on Garibaldi Way with secure bike storage at entry.</p>
+              </div>
+              <div className="location-detail-item">
+                <strong>Accessibility</strong>
+                <p>ADA-compliant entry, elevators, and accessible locker rooms across all floors.</p>
+              </div>
+              <div className="location-actions">
+                <Link href="/contact" className="button button-ghost">Get directions &rarr;</Link>
+              </div>
+            </div>
           </div>
         </div>
       </section>

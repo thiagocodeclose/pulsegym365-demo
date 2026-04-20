@@ -4,6 +4,7 @@ import './globals.css';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { SiteModeProvider } from '@/components/SiteModeProvider';
+import { PromoBanner } from '@/components/PromoBanner';
 import { GlobalWidgets } from '@/components/GlobalWidgets';
 import { site } from '@/lib/site-data';
 
@@ -29,6 +30,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body className={`${headingFont.variable} ${bodyFont.variable}`}>
         <SiteModeProvider>
+          <PromoBanner />
           <Header />
           <main>{children}</main>
           <Footer />

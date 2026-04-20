@@ -26,6 +26,13 @@ export const site = {
   ]
 };
 
+export const gymStats = [
+  { value: 500, suffix: '+', label: 'Active Members' },
+  { value: 15, suffix: '', label: 'Years Established' },
+  { value: 20, suffix: '+', label: 'Certified Coaches' },
+  { value: 8, suffix: '', label: 'Training Zones' }
+];
+
 export type TrainingStyle = {
   name: string;
   category: string;
@@ -448,24 +455,49 @@ export const facilities: FacilityItem[] = [
 
 export const spaces = facilities.map((space) => space.name);
 
-export const testimonials = [
+export type Testimonial = {
+  quote: string;
+  name: string;
+  role: string;
+  stars: number;
+  plan: string;
+};
+
+export const testimonials: Testimonial[] = [
   {
-    quote:
-      'I came for Pilates and stayed for everything else. The variety and structure made consistency easy.',
+    quote: 'I came for Pilates and stayed for everything else. The variety and structure made consistency easy.',
     name: 'Amanda R.',
-    role: 'Member since 2024'
+    role: 'Member since 2024',
+    stars: 5,
+    plan: 'All Access'
   },
   {
-    quote:
-      'PulseGym feels premium without being intimidating. I can lift, box, swim, and recover in one place.',
+    quote: 'PulseGym feels premium without being intimidating. I can lift, box, swim, and recover in one place.',
     name: 'Chris T.',
-    role: 'Performance+ member'
+    role: 'Performance+ member',
+    stars: 5,
+    plan: 'Performance+'
   },
   {
-    quote:
-      'The coaches are legit, the classes are packed with options, and the vibe is always motivating.',
+    quote: 'The coaches are legit, the classes are packed with options, and the vibe is always motivating.',
     name: 'Jordan L.',
-    role: 'All Access member'
+    role: 'All Access member',
+    stars: 5,
+    plan: 'All Access'
+  },
+  {
+    quote: 'I tried four gyms in Utah and nothing came close. The reformer room alone is worth the membership.',
+    name: 'Renata S.',
+    role: 'Classes+ member',
+    stars: 5,
+    plan: 'Classes+'
+  },
+  {
+    quote: 'Marcus in boxing and Sarah in Pilates are incredible coaches. My posture and conditioning improved in weeks.',
+    name: 'Tyler B.',
+    role: 'Member since 2023',
+    stars: 5,
+    plan: 'All Access'
   }
 ];
 
@@ -527,5 +559,100 @@ export const integrationModes = [
     title: 'Pulse-Powered Website',
     summary: 'Same public website feel, now enhanced with connected conversion and live business blocks.',
     code: 'Live pricing, smart trial routing, dynamic class preview, connected portal.'
+  }
+];
+
+export const partners = [
+  { name: 'ACE Certified', category: 'Personal Training' },
+  { name: 'NSCA', category: 'Strength & Conditioning' },
+  { name: 'NASM', category: 'Performance Coaching' },
+  { name: 'Life Fitness', category: 'Equipment Partner' },
+  { name: 'Technogym', category: 'Studio Equipment' },
+  { name: 'AEA', category: 'Aquatics Certified' }
+];
+
+export type ScheduleSlot = { time: string; name: string; accent: string };
+export type ScheduleDay = { day: string; slots: ScheduleSlot[] };
+
+export const weeklySchedule: ScheduleDay[] = [
+  { day: 'Mon', slots: [
+    { time: '5:30 AM', name: 'Strength Express', accent: 'green' },
+    { time: '7:00 AM', name: 'Reformer Pilates', accent: 'orange' },
+    { time: '5:30 PM', name: 'Rhythm Ride', accent: 'blue' },
+    { time: '7:15 PM', name: 'Boxing', accent: 'red' },
+    { time: '8:00 PM', name: 'Jiu Jitsu', accent: 'purple' }
+  ]},
+  { day: 'Tue', slots: [
+    { time: '5:30 AM', name: 'Strength Express', accent: 'green' },
+    { time: '7:00 AM', name: 'Power Yoga', accent: 'gold' },
+    { time: '6:30 PM', name: 'Dance Cardio', accent: 'pink' },
+    { time: '7:15 PM', name: 'Boxing', accent: 'red' },
+    { time: '8:00 PM', name: 'Jiu Jitsu', accent: 'purple' }
+  ]},
+  { day: 'Wed', slots: [
+    { time: '5:30 AM', name: 'Strength Express', accent: 'green' },
+    { time: '7:00 AM', name: 'Reformer Pilates', accent: 'orange' },
+    { time: '12:00 PM', name: 'Aqua Conditioning', accent: 'teal' },
+    { time: '5:30 PM', name: 'Rhythm Ride', accent: 'blue' },
+    { time: '7:00 PM', name: 'Power Yoga', accent: 'gold' }
+  ]},
+  { day: 'Thu', slots: [
+    { time: '5:30 AM', name: 'Strength Express', accent: 'green' },
+    { time: '7:00 AM', name: 'Power Yoga', accent: 'gold' },
+    { time: '6:30 PM', name: 'Dance Cardio', accent: 'pink' },
+    { time: '7:15 PM', name: 'Boxing', accent: 'red' },
+    { time: '8:00 PM', name: 'Jiu Jitsu', accent: 'purple' }
+  ]},
+  { day: 'Fri', slots: [
+    { time: '5:30 AM', name: 'Strength Express', accent: 'green' },
+    { time: '7:00 AM', name: 'Reformer Pilates', accent: 'orange' },
+    { time: '6:00 PM', name: 'Dance Cardio', accent: 'pink' },
+    { time: '7:15 PM', name: 'Boxing', accent: 'red' }
+  ]},
+  { day: 'Sat', slots: [
+    { time: '8:00 AM', name: 'Jiu Jitsu', accent: 'purple' },
+    { time: '9:00 AM', name: 'Aqua Conditioning', accent: 'teal' },
+    { time: '10:00 AM', name: 'Reformer Pilates', accent: 'orange' },
+    { time: '11:00 AM', name: 'Power Yoga', accent: 'gold' }
+  ]},
+  { day: 'Sun', slots: [
+    { time: '8:30 AM', name: 'Power Yoga', accent: 'gold' },
+    { time: '9:30 AM', name: 'Aqua Conditioning', accent: 'teal' },
+    { time: '11:00 AM', name: 'Dance Cardio', accent: 'pink' }
+  ]}
+];
+
+export const transformations = [
+  {
+    name: 'Daniela M.',
+    result: '-22 lbs in 14 weeks',
+    timeframe: '14 weeks',
+    story: 'Combined reformer Pilates, yoga, and strength sessions. Joined for variety, stayed for the coaches.',
+    plan: 'All Access',
+    accent: 'orange'
+  },
+  {
+    name: 'Jason K.',
+    result: '+40 lbs lean mass',
+    timeframe: '20 weeks',
+    story: 'Started with strength express coaching and added combat training. Built his best physique at 42.',
+    plan: 'Performance+',
+    accent: 'green'
+  },
+  {
+    name: 'Sofia R.',
+    result: 'First triathlon at 51',
+    timeframe: '18 weeks',
+    story: 'Used aquatics, spinning, and yoga as her triple-threat training block. Finished her first event in spring.',
+    plan: 'All Access',
+    accent: 'teal'
+  },
+  {
+    name: 'Brandon W.',
+    result: '-3 clothing sizes',
+    timeframe: '12 weeks',
+    story: 'Boxing fundamentals and rhythm ride became his daily ritual. Consistent, fun, and coach-supported.',
+    plan: 'Classes+',
+    accent: 'red'
   }
 ];
