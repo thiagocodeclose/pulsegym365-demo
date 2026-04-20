@@ -1,7 +1,13 @@
+'use client';
+
 import Link from 'next/link';
 import { site } from '@/lib/site-data';
+import { useSiteMode } from './SiteModeProvider';
+import { WidgetZone } from './WidgetZone';
 
 export function Footer() {
+  const { isPulse } = useSiteMode();
+
   return (
     <footer className="site-footer">
       <div className="container footer-grid">
@@ -17,9 +23,13 @@ export function Footer() {
         </div>
         <div>
           <h4>Hours</h4>
-          {site.hours.map((item) => (
-            <p key={item}>{item}</p>
-          ))}
+          <WidgetZone widget="hours" active={isPulse} label="Live studio hours">
+            <>
+              {site.hours.map((item) => (
+                <p key={item}>{item}</p>
+              ))}
+            </>
+          </WidgetZone>
         </div>
         <div>
           <h4>Quick Links</h4>

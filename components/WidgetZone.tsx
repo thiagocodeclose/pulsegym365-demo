@@ -18,7 +18,8 @@ type WidgetType =
   | 'community'
   | 'wod'
   | 'gift_card'
-  | 'waitlist';
+  | 'waitlist'
+  | 'hours';
 
 interface WidgetZoneProps {
   widget: WidgetType;

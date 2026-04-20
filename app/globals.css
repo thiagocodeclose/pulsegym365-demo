@@ -1099,3 +1099,7 @@ textarea::placeholder {
 .widget-iframe--info {
   min-height: 340px;
 }
+
+.widget-iframe--hours {
+  min-height: 160px;
+}
