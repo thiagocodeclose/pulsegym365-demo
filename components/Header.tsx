@@ -7,8 +7,6 @@ const nav = [
   { href: '/classes', label: 'Classes' },
   { href: '/pricing', label: 'Pricing' },
   { href: '/trainers', label: 'Trainers' },
-  { href: '/free-trial', label: 'Free Trial' },
-  { href: '/portal', label: 'Member Portal' },
   { href: '/contact', label: 'Contact' }
 ];
 
