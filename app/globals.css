@@ -99,23 +99,18 @@ main {
 }
 
 .site-mode-wrap {
-  position: sticky;
-  top: 86px;
-  z-index: 45;
-  padding-top: 0.8rem;
+  display: flex;
+  align-items: center;
 }
 
 .site-mode-toggle {
-  width: fit-content;
-  margin-left: auto;
   display: flex;
   align-items: center;
-  gap: 0.55rem;
+  gap: 0.4rem;
   border-radius: 999px;
-  padding: 0.5rem;
-  background: rgba(18, 18, 18, 0.92);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: var(--shadow);
+  padding: 0.3rem;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .site-mode-label {
@@ -128,11 +123,12 @@ main {
 }
 
 .mode-chip {
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.02);
-  color: #d9d9d9;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--soft);
   border-radius: 999px;
-  padding: 0.48rem 0.9rem;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.78rem;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.2s ease;

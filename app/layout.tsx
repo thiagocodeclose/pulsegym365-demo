@@ -4,7 +4,6 @@ import './globals.css';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { SiteModeProvider } from '@/components/SiteModeProvider';
-import { SiteModeToggle } from '@/components/SiteModeToggle';
 import { GlobalWidgets } from '@/components/GlobalWidgets';
 import { site } from '@/lib/site-data';
 
@@ -31,7 +30,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className={`${headingFont.variable} ${bodyFont.variable}`}>
         <SiteModeProvider>
           <Header />
-          <SiteModeToggle />
           <main>{children}</main>
           <Footer />
           <GlobalWidgets />

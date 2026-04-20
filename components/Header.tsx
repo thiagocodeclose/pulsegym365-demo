@@ -1,6 +1,10 @@
+'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
 import { site } from '@/lib/site-data';
+import { useSiteMode } from './SiteModeProvider';
+import { SiteModeToggle } from './SiteModeToggle';
 
 const nav = [
   { href: '/', label: 'Home' },
@@ -11,6 +15,9 @@ const nav = [
 ];
 
 export function Header() {
+  const { mode } = useSiteMode();
+  const isPulse = mode === 'pulse';
+
   return (
     <header className="site-header">
       <div className="container nav-shell">
@@ -27,9 +34,12 @@ export function Header() {
         </nav>
 
         <div className="nav-actions">
-          <Link href="/portal" className="button button-ghost">
-            Member Login
-          </Link>
+          <SiteModeToggle />
+          {isPulse && (
+            <Link href="/portal" className="button button-ghost">
+              Member Login
+            </Link>
+          )}
           <Link href="/free-trial" className="button button-primary">
             Start Free Trial
           </Link>
