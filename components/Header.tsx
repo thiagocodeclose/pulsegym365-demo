@@ -34,7 +34,6 @@ export function Header() {
         </nav>
 
         <div className="nav-actions">
-          <SiteModeToggle />
           {isPulse && (
             <Link href="/portal" className="button button-ghost">
               Member Login
@@ -43,6 +42,11 @@ export function Header() {
           <Link href="/free-trial" className="button button-primary">
             Start Free Trial
           </Link>
+        </div>
+      </div>
+      <div className="header-mode-row">
+        <div className="container">
+          <SiteModeToggle />
         </div>
       </div>
     </header>
