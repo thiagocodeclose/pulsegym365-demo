@@ -1,0 +1,38 @@
+
+> pulsegym365-demo@0.1.0 build
+> next build
+
+  ▲ Next.js 14.2.15
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully
+   Linting and checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/12) ...
+   Generating static pages (3/12) 
+   Generating static pages (6/12) 
+   Generating static pages (9/12) 
+ ✓ Generating static pages (12/12)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                              Size     First Load JS
+┌ ○ /                                    3.29 kB         102 kB
+├ ○ /_not-found                          873 B            88 kB
+├ ƒ /api/demo-contact                    0 B                0 B
+├ ƒ /api/demo-trial                      0 B                0 B
+├ ○ /classes                             1.54 kB         100 kB
+├ ○ /contact                             1.52 kB        93.4 kB
+├ ○ /free-trial                          2.65 kB        94.5 kB
+├ ○ /portal                              2.06 kB          96 kB
+├ ○ /pricing                             1.89 kB         101 kB
+└ ○ /trainers                            800 B          92.7 kB
++ First Load JS shared by all            87.1 kB
+  ├ chunks/117-022b78fc13771251.js       31.6 kB
+  ├ chunks/fd9d1056-fdc813d0a7d52d12.js  53.6 kB
+  └ other shared chunks (total)          1.89 kB
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

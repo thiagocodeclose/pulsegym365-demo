@@ -1,9 +1,15 @@
+"use client";
+
 import { SectionHeading } from '@/components/SectionHeading';
 import { TrainerCard } from '@/components/TrainerCard';
+import { ModeBadge } from '@/components/ModeBadge';
+import { useSiteMode } from '@/components/SiteModeProvider';
 import { WidgetZone } from '@/components/WidgetZone';
 import { trainers } from '@/lib/site-data';
 
 export default function TrainersPage() {
+  const { isPulse } = useSiteMode();
+
   return (
     <>
       <section className="page-hero">
@@ -11,8 +17,9 @@ export default function TrainersPage() {
           <span className="eyebrow">Coaches</span>
           <h1>Experts across every room in the club</h1>
           <p>
-            Trainers and instructors help the website feel human. They also make the future instructor widget immediately useful and believable.
+            PulseGym coaches combine technical training expertise with member-first support across all modalities.
           </p>
+          {isPulse ? <ModeBadge mode="pulse" text="Coach highlights connected" /> : null}
         </div>
       </section>
 
@@ -20,9 +27,9 @@ export default function TrainersPage() {
         <div className="container">
           <SectionHeading
             title="Meet the PulseGym coaching team"
-            description="This page is intentionally broad because the club offers multiple experiences, from combat sports to mobility, cycling, aquatics, and strength."
+            description="From mobility and yoga to combat and performance training, our coaches help members progress with confidence."
           />
-          <WidgetZone widgetType="instructors" minHeight={500} label="Instructors">
+          <WidgetZone widget="instructors" active={isPulse} label="Live coach profiles">
             <div className="trainers-grid">
               {trainers.map((trainer) => (
                 <TrainerCard key={trainer.name} trainer={trainer} />

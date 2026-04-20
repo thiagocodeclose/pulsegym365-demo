@@ -1,24 +1,91 @@
+export type SiteMode = 'standard' | 'pulse';
+
 export const site = {
   name: 'PulseGym',
   domain: 'www.pulsegym365.com',
-  tagline: 'One Club. Every Way to Train.',
+  tagline: 'Train Hard. Recover Smart. Belong for Life.',
   subtitle:
-    'A premium full-service fitness club with Pilates, Yoga, Swimming, Boxing, Jiu Jitsu, Dance, Spinning, and a high-performance gym floor.',
+    'PulseGym is a complete premium community fitness club with coaching, classes, aquatics, and high-performance training under one roof.',
+  addressLine1: '3493 S Garibaldi Way',
+  addressLine2: 'Utah 84045',
   address: '3493 S Garibaldi Way, Utah 84045',
   phone: '(801) 555-0148',
   email: 'hello@pulsegym365.com',
-  hours: [
-    'Mon-Fri: 5:00 AM - 10:00 PM',
-    'Sat: 7:00 AM - 8:00 PM',
-    'Sun: 8:00 AM - 6:00 PM'
-  ],
+  hours: ['Mon-Fri: 5:00 AM - 10:00 PM', 'Sat: 7:00 AM - 8:00 PM', 'Sun: 8:00 AM - 6:00 PM'],
   heroStats: [
     { value: '8', label: 'training zones' },
     { value: '60+', label: 'weekly classes' },
     { value: '4.9', label: 'member rating' },
-    { value: '1', label: 'demo gym website' }
+    { value: 'All-in-one', label: 'fitness club' }
   ]
 };
+
+export type TrainingStyle = {
+  name: string;
+  category: string;
+  image: string;
+  accent: string;
+  fallback: string;
+};
+
+export const trainingStyles: TrainingStyle[] = [
+  {
+    name: 'Pilates',
+    category: 'Core and Mobility',
+    image: '/images/styles/pilates.jpg',
+    accent: 'orange',
+    fallback: 'linear-gradient(135deg, rgba(245,124,0,0.78), rgba(43,19,0,0.78))'
+  },
+  {
+    name: 'Yoga',
+    category: 'Mind and Body',
+    image: '/images/styles/yoga.jpg',
+    accent: 'gold',
+    fallback: 'linear-gradient(135deg, rgba(244,184,68,0.74), rgba(74,38,0,0.82))'
+  },
+  {
+    name: 'Swimming',
+    category: 'Aquatics',
+    image: '/images/styles/swimming.jpg',
+    accent: 'teal',
+    fallback: 'linear-gradient(135deg, rgba(15,183,167,0.7), rgba(1,44,54,0.86))'
+  },
+  {
+    name: 'Boxing',
+    category: 'Combat Sports',
+    image: '/images/styles/boxing.jpg',
+    accent: 'red',
+    fallback: 'linear-gradient(135deg, rgba(235,87,87,0.72), rgba(66,10,10,0.86))'
+  },
+  {
+    name: 'Jiu Jitsu',
+    category: 'Grappling',
+    image: '/images/styles/jiu-jitsu.jpg',
+    accent: 'purple',
+    fallback: 'linear-gradient(135deg, rgba(142,103,255,0.72), rgba(24,14,53,0.88))'
+  },
+  {
+    name: 'Dance',
+    category: 'Cardio and Rhythm',
+    image: '/images/styles/dance.jpg',
+    accent: 'pink',
+    fallback: 'linear-gradient(135deg, rgba(255,95,175,0.72), rgba(73,9,40,0.86))'
+  },
+  {
+    name: 'Spinning',
+    category: 'Cycling Studio',
+    image: '/images/styles/spinning.jpg',
+    accent: 'blue',
+    fallback: 'linear-gradient(135deg, rgba(42,109,246,0.74), rgba(9,21,56,0.88))'
+  },
+  {
+    name: 'Strength Training',
+    category: 'Gym Floor',
+    image: '/images/styles/strength.jpg',
+    accent: 'green',
+    fallback: 'linear-gradient(135deg, rgba(44,207,114,0.74), rgba(10,45,26,0.88))'
+  }
+];
 
 export type ClassItem = {
   name: string;
@@ -28,59 +95,107 @@ export type ClassItem = {
   capacity: number;
   description: string;
   accent: string;
+  coach: string;
   schedule: string;
+  image: string;
+  fallback: string;
+  live?: {
+    nextSlot: string;
+    openSpots: number;
+    status: 'Open' | 'Filling fast' | 'Waitlist';
+  };
 };
 
 export const featuredClasses: ClassItem[] = [
   {
     name: 'Reformer Pilates',
-    group: 'Mind & Body',
+    group: 'Mind and Body',
     duration: '50 min',
     level: 'All Levels',
     capacity: 12,
-    description: 'Precision movement, core strength, posture, and control in a premium Pilates studio.',
+    description: 'Precision movement and core strength in a boutique-style reformer room.',
     accent: 'orange',
-    schedule: 'Mon, Wed, Fri · 7:00 AM'
+    coach: 'Sarah Kim',
+    schedule: 'Mon, Wed, Fri - 7:00 AM',
+    image: '/images/classes/reformer-pilates.jpg',
+    fallback: 'linear-gradient(135deg, rgba(245,124,0,0.8), rgba(30,16,2,0.9))',
+    live: {
+      nextSlot: 'Today - 6:30 PM',
+      openSpots: 3,
+      status: 'Filling fast'
+    }
   },
   {
     name: 'Power Yoga Flow',
-    group: 'Mind & Body',
+    group: 'Mind and Body',
     duration: '45 min',
     level: 'Intermediate',
     capacity: 18,
-    description: 'Dynamic vinyasa practice built for mobility, endurance, breath, and recovery.',
+    description: 'Dynamic flow for mobility, endurance, breathwork, and athletic recovery.',
     accent: 'gold',
-    schedule: 'Tue, Thu · 6:30 PM'
+    coach: 'Priya Shah',
+    schedule: 'Tue, Thu - 6:30 PM',
+    image: '/images/classes/power-yoga-flow.jpg',
+    fallback: 'linear-gradient(135deg, rgba(244,184,68,0.78), rgba(53,31,0,0.9))',
+    live: {
+      nextSlot: 'Tomorrow - 7:15 AM',
+      openSpots: 7,
+      status: 'Open'
+    }
   },
   {
     name: 'Rhythm Ride',
-    group: 'Cardio & Energy',
+    group: 'Cardio and Energy',
     duration: '45 min',
     level: 'Beginner+',
     capacity: 25,
-    description: 'Music-driven cycling with coaching, intervals, and high-energy lighting.',
+    description: 'Music-driven cycling with intervals, performance coaching, and immersive lighting.',
     accent: 'blue',
-    schedule: 'Mon, Wed · 5:30 PM'
+    coach: 'Nia Carter',
+    schedule: 'Mon, Wed - 5:30 PM',
+    image: '/images/classes/rhythm-ride.jpg',
+    fallback: 'linear-gradient(135deg, rgba(42,109,246,0.82), rgba(8,17,48,0.9))',
+    live: {
+      nextSlot: 'Today - 5:30 PM',
+      openSpots: 2,
+      status: 'Filling fast'
+    }
   },
   {
     name: 'Boxing Fundamentals',
-    group: 'Combat & Discipline',
+    group: 'Combat and Discipline',
     duration: '60 min',
     level: 'Beginner',
     capacity: 16,
-    description: 'Technique, conditioning, footwork, combinations, and confidence-building drills.',
+    description: 'Footwork, combinations, defense, and conditioning for all fitness levels.',
     accent: 'red',
-    schedule: 'Tue, Thu · 7:15 PM'
+    coach: 'Marcus Reed',
+    schedule: 'Tue, Thu - 7:15 PM',
+    image: '/images/classes/boxing-fundamentals.jpg',
+    fallback: 'linear-gradient(135deg, rgba(235,87,87,0.82), rgba(57,11,11,0.9))',
+    live: {
+      nextSlot: 'Tonight - 7:15 PM',
+      openSpots: 0,
+      status: 'Waitlist'
+    }
   },
   {
     name: 'No-Gi Jiu Jitsu',
-    group: 'Combat & Discipline',
+    group: 'Combat and Discipline',
     duration: '60 min',
     level: 'Intermediate',
     capacity: 20,
-    description: 'Movement-based grappling with live coaching, positional rounds, and smart progression.',
+    description: 'Movement-based grappling with positional rounds and progression coaching.',
     accent: 'purple',
-    schedule: 'Mon, Thu · 8:00 PM'
+    coach: 'Kenji Sato',
+    schedule: 'Mon, Thu - 8:00 PM',
+    image: '/images/classes/no-gi-jiu-jitsu.jpg',
+    fallback: 'linear-gradient(135deg, rgba(142,103,255,0.82), rgba(25,15,52,0.9))',
+    live: {
+      nextSlot: 'Today - 8:00 PM',
+      openSpots: 5,
+      status: 'Open'
+    }
   },
   {
     name: 'Aqua Conditioning',
@@ -88,79 +203,137 @@ export const featuredClasses: ClassItem[] = [
     duration: '40 min',
     level: 'All Levels',
     capacity: 15,
-    description: 'Low-impact pool training that improves endurance, coordination, and recovery.',
+    description: 'Low-impact resistance and cardio training inside the aquatics center.',
     accent: 'teal',
-    schedule: 'Sat · 9:00 AM'
+    coach: 'Emma Flores',
+    schedule: 'Sat - 9:00 AM',
+    image: '/images/classes/aqua-conditioning.jpg',
+    fallback: 'linear-gradient(135deg, rgba(15,183,167,0.82), rgba(4,37,34,0.9))',
+    live: {
+      nextSlot: 'Saturday - 9:00 AM',
+      openSpots: 9,
+      status: 'Open'
+    }
   },
   {
     name: 'Dance Cardio',
-    group: 'Cardio & Energy',
+    group: 'Cardio and Energy',
     duration: '45 min',
     level: 'All Levels',
     capacity: 24,
-    description: 'Feel-good choreography and cardio conditioning in a vibrant studio environment.',
+    description: 'High-energy choreography sessions that blend fun and calorie burn.',
     accent: 'pink',
-    schedule: 'Fri · 6:00 PM'
+    coach: 'Maya Brooks',
+    schedule: 'Fri - 6:00 PM',
+    image: '/images/classes/dance-cardio.jpg',
+    fallback: 'linear-gradient(135deg, rgba(255,95,175,0.82), rgba(59,8,35,0.9))',
+    live: {
+      nextSlot: 'Friday - 6:00 PM',
+      openSpots: 11,
+      status: 'Open'
+    }
   },
   {
     name: 'Strength Floor Express',
-    group: 'Strength & Performance',
+    group: 'Strength and Performance',
     duration: '30 min',
     level: 'All Levels',
     capacity: 20,
-    description: 'Coach-led strength circuit using racks, dumbbells, sleds, and smart programming.',
+    description: 'Coach-led strength circuit with racks, sleds, and focused programming.',
     accent: 'green',
-    schedule: 'Daily · 12:15 PM'
+    coach: 'Diego Alvarez',
+    schedule: 'Daily - 12:15 PM',
+    image: '/images/classes/strength-floor-express.jpg',
+    fallback: 'linear-gradient(135deg, rgba(44,207,114,0.82), rgba(8,38,22,0.9))',
+    live: {
+      nextSlot: 'Today - 12:15 PM',
+      openSpots: 4,
+      status: 'Filling fast'
+    }
   }
+];
+
+export const classFilters = [
+  'All',
+  'Mind and Body',
+  'Aquatics',
+  'Combat and Discipline',
+  'Cardio and Energy',
+  'Strength and Performance'
 ];
 
 export type Plan = {
   name: string;
   price: string;
+  annualPrice?: string;
   badge?: string;
   blurb: string;
   access: string;
   features: string[];
+  pulseMeta?: {
+    syncLabel: string;
+    updateWindow: string;
+  };
 };
 
 export const plans: Plan[] = [
   {
     name: 'Starter',
     price: '$79/mo',
-    blurb: 'Great for members building a habit with gym floor access and selected weekly classes.',
-    access: 'Gym floor + selected classes',
-    features: [
-      'Strength floor access',
-      '4 classes per month',
-      'Member portal access',
-      'Intro session included'
-    ]
+    annualPrice: '$69/mo billed annually',
+    blurb: 'Great for members building consistency with gym floor access and selected classes.',
+    access: 'Gym floor + 4 classes/month',
+    features: ['Open gym access', '4 classes per month', '1 onboarding session', 'Member portal access'],
+    pulseMeta: {
+      syncLabel: 'Live pricing',
+      updateWindow: 'Updated 8 minutes ago'
+    }
+  },
+  {
+    name: 'Classes+',
+    price: '$109/mo',
+    annualPrice: '$99/mo billed annually',
+    badge: 'Best Value',
+    blurb: 'Built for members who train often and want flexibility across club studios.',
+    access: '8 classes/month + gym floor',
+    features: ['8 classes per month', 'Priority booking window', '1 guest pass monthly', 'Wellness orientation'],
+    pulseMeta: {
+      syncLabel: 'Managed in Pulse',
+      updateWindow: 'Auto-synced today'
+    }
   },
   {
     name: 'All Access',
-    price: '$129/mo',
-    badge: 'Most Popular',
-    blurb: 'The best fit for members who want flexibility across Pilates, Yoga, Cycling, Aquatics, and more.',
+    price: '$139/mo',
+    annualPrice: '$129/mo billed annually',
+    blurb: 'Unlimited classes, full gym floor, and complete access to the PulseGym experience.',
     access: 'Unlimited classes + gym floor',
-    features: [
-      'Unlimited classes',
-      'Priority booking',
-      '1 guest pass per month',
-      'App + portal access'
-    ]
+    features: ['Unlimited classes', 'Priority waitlist access', '2 guest passes monthly', 'Portal and app connected'],
+    pulseMeta: {
+      syncLabel: 'Auto-updated from system',
+      updateWindow: 'Next sync in 15 min'
+    }
   },
   {
     name: 'Performance+',
     price: '$199/mo',
-    blurb: 'Premium coaching experience with full club access, recovery perks, and advanced booking benefits.',
-    access: 'Full club + premium support',
-    features: [
-      'Unlimited everything',
-      'Monthly PT strategy session',
-      'Premium locker perks',
-      'Priority waitlist access'
-    ]
+    annualPrice: '$189/mo billed annually',
+    blurb: 'Premium coaching path with strategy sessions, advanced support, and total club access.',
+    access: 'All Access + coaching perks',
+    features: ['Monthly strategy session', 'Recovery lounge credits', 'Advanced booking priority', 'Dedicated performance coach'],
+    pulseMeta: {
+      syncLabel: 'Live pricing',
+      updateWindow: 'Updated 3 minutes ago'
+    }
   }
+];
+
+export const planComparisonRows = [
+  { feature: 'Gym floor access', starter: 'Included', classesPlus: 'Included', allAccess: 'Included', performancePlus: 'Included' },
+  { feature: 'Monthly classes', starter: '4 classes', classesPlus: '8 classes', allAccess: 'Unlimited', performancePlus: 'Unlimited' },
+  { feature: 'Booking priority', starter: 'Standard', classesPlus: 'Priority', allAccess: 'Priority+', performancePlus: 'Top priority' },
+  { feature: 'Guest passes', starter: 'None', classesPlus: '1 / month', allAccess: '2 / month', performancePlus: '4 / month' },
+  { feature: 'Coaching strategy session', starter: '-', classesPlus: '-', allAccess: '-', performancePlus: 'Included' }
 ];
 
 export type Trainer = {
@@ -168,86 +341,185 @@ export type Trainer = {
   specialty: string;
   bio: string;
   accent: string;
+  image: string;
+  fallback: string;
 };
 
 export const trainers: Trainer[] = [
   {
     name: 'Sarah Kim',
-    specialty: 'Pilates & Mobility',
-    bio: 'Certified reformer coach focused on control, alignment, injury prevention, and strong foundations.',
-    accent: 'orange'
+    specialty: 'Pilates and Mobility',
+    bio: 'Certified reformer coach focused on control, alignment, and injury-resistant movement.',
+    accent: 'orange',
+    image: '/images/trainers/sarah-kim.jpg',
+    fallback: 'linear-gradient(135deg, rgba(245,124,0,0.8), rgba(52,23,2,0.85))'
   },
   {
     name: 'Marcus Reed',
-    specialty: 'Boxing & Conditioning',
-    bio: 'Former amateur boxer blending technique, confidence, and smart conditioning for every level.',
-    accent: 'red'
+    specialty: 'Boxing and Conditioning',
+    bio: 'Former amateur boxer blending technical coaching with confidence-building conditioning.',
+    accent: 'red',
+    image: '/images/trainers/marcus-reed.jpg',
+    fallback: 'linear-gradient(135deg, rgba(235,87,87,0.8), rgba(55,12,12,0.86))'
   },
   {
     name: 'Priya Shah',
-    specialty: 'Yoga & Breathwork',
-    bio: 'Guides Power Yoga, Flow, and restorative sessions with equal emphasis on strength and reset.',
-    accent: 'gold'
+    specialty: 'Yoga and Breathwork',
+    bio: 'Leads dynamic and restorative sessions with equal emphasis on strength and recovery.',
+    accent: 'gold',
+    image: '/images/trainers/priya-shah.jpg',
+    fallback: 'linear-gradient(135deg, rgba(244,184,68,0.8), rgba(54,32,0,0.86))'
   },
   {
     name: 'Diego Alvarez',
-    specialty: 'Strength & Athletic Performance',
-    bio: 'Helps members get stronger with structured, coach-led programming across the full gym floor.',
-    accent: 'green'
+    specialty: 'Strength and Performance',
+    bio: 'Helps members build measurable strength through progressive, coach-led programming.',
+    accent: 'green',
+    image: '/images/trainers/diego-alvarez.jpg',
+    fallback: 'linear-gradient(135deg, rgba(44,207,114,0.8), rgba(8,39,22,0.86))'
   }
 ];
 
-export const spaces = [
-  'Reformer Pilates Studio',
-  'Yoga Room',
-  'Aquatics Center',
-  'Combat Room',
-  'Dance Studio',
-  'Cycling Studio',
-  'Strength Floor',
-  'Recovery Lounge'
-];
+export type FacilityItem = {
+  name: string;
+  caption: string;
+  accent: string;
+  image: string;
+  fallback: string;
+};
 
-export const integrationModes = [
+export const facilities: FacilityItem[] = [
   {
-    title: 'Universal Script',
-    summary: 'One script tag injects the enabled Pulse widgets into the website automatically.',
-    code: '<script src="https://app.pulse.com/w/pulsegym.js"></script>'
+    name: 'Pilates Room',
+    caption: 'Reformer lines, private coaching spots, and mobility tools.',
+    accent: 'orange',
+    image: '/images/facilities/pilates-room.jpg',
+    fallback: 'linear-gradient(135deg, rgba(245,124,0,0.78), rgba(40,20,3,0.88))'
   },
   {
-    title: 'Individual Widgets',
-    summary: 'Drop specific dynamic blocks like Pricing, Schedule, or AI Chat into selected pages.',
-    code: '<div data-pulse="pricing" data-gym="pulsegym"></div>'
+    name: 'Yoga Room',
+    caption: 'Quiet warm room for flows, breathwork, and mobility classes.',
+    accent: 'gold',
+    image: '/images/facilities/yoga-room.jpg',
+    fallback: 'linear-gradient(135deg, rgba(244,184,68,0.78), rgba(41,24,1,0.88))'
   },
   {
-    title: 'Hosted Pages',
-    summary: 'Use direct dynamic pages for trial, pricing, classes, or portal access from ads and QR codes.',
-    code: 'https://www.pulsegym365.com/free-trial'
+    name: 'Aquatics Center',
+    caption: 'Lap lanes, conditioning lanes, and guided aquatics sessions.',
+    accent: 'teal',
+    image: '/images/facilities/aquatics-center.jpg',
+    fallback: 'linear-gradient(135deg, rgba(15,183,167,0.78), rgba(3,29,27,0.88))'
   },
   {
-    title: 'Native Form Bridge',
-    summary: 'Keep the gym website form and send the lead into Pulse with attribution, consent, and context.',
-    code: 'POST /api/public/form-bridge'
+    name: 'Combat Room',
+    caption: 'Heavy bags, mat space, and evening boxing and grappling blocks.',
+    accent: 'red',
+    image: '/images/facilities/combat-room.jpg',
+    fallback: 'linear-gradient(135deg, rgba(235,87,87,0.78), rgba(44,10,10,0.88))'
+  },
+  {
+    name: 'Dance Studio',
+    caption: 'High-energy mirrored studio with rhythm and cardio sessions.',
+    accent: 'pink',
+    image: '/images/facilities/dance-studio.jpg',
+    fallback: 'linear-gradient(135deg, rgba(255,95,175,0.78), rgba(50,8,31,0.88))'
+  },
+  {
+    name: 'Cycling Studio',
+    caption: 'Performance bikes, immersive lights, and rhythm-driven coaching.',
+    accent: 'blue',
+    image: '/images/facilities/cycling-studio.jpg',
+    fallback: 'linear-gradient(135deg, rgba(42,109,246,0.78), rgba(8,16,43,0.88))'
+  },
+  {
+    name: 'Strength Floor',
+    caption: 'Racks, dumbbells, turf lanes, and functional power stations.',
+    accent: 'green',
+    image: '/images/facilities/strength-floor.jpg',
+    fallback: 'linear-gradient(135deg, rgba(44,207,114,0.78), rgba(7,30,18,0.88))'
   }
 ];
+
+export const spaces = facilities.map((space) => space.name);
 
 export const testimonials = [
   {
     quote:
-      'I came for Pilates and stayed for everything else. The schedule, coaches, and variety make it incredibly easy to stay consistent.',
+      'I came for Pilates and stayed for everything else. The variety and structure made consistency easy.',
     name: 'Amanda R.',
     role: 'Member since 2024'
   },
   {
     quote:
-      'PulseGym feels premium without being intimidating. I can lift, box, swim, and still recover well in the same club.',
+      'PulseGym feels premium without being intimidating. I can lift, box, swim, and recover in one place.',
     name: 'Chris T.',
     role: 'Performance+ member'
   },
   {
     quote:
-      'The trial flow is simple, the member portal is clear, and the class variety actually makes the website feel alive.',
+      'The coaches are legit, the classes are packed with options, and the vibe is always motivating.',
     name: 'Jordan L.',
-    role: 'New member'
+    role: 'All Access member'
+  }
+];
+
+export const comparisonRows = [
+  {
+    item: 'Plans',
+    standard: 'Static cards edited manually',
+    pulse: 'Live pricing and plan updates from Pulse'
+  },
+  {
+    item: 'Classes',
+    standard: 'Static class cards and schedule text',
+    pulse: 'Connected schedule preview with spots and timing'
+  },
+  {
+    item: 'Trial Form',
+    standard: 'Generic website form',
+    pulse: 'Smart lead capture with attribution and routing'
+  },
+  {
+    item: 'Questions',
+    standard: 'Contact page only',
+    pulse: 'AI chat and guided lead capture experience'
+  },
+  {
+    item: 'Member Access',
+    standard: 'Simple login link',
+    pulse: 'Connected portal shortcuts for billing and bookings'
+  }
+];
+
+export const pulseEnhancements = [
+  'Live from Pulse badges in conversion blocks',
+  'Smart lead routing for trial submissions',
+  'Pricing and class previews synced from system',
+  'Connected member portal shortcuts',
+  'AI chat surface for quick pre-sales questions'
+];
+
+export const trialInterestOptions = [
+  'All Access',
+  'Pilates',
+  'Yoga',
+  'Swimming',
+  'Boxing',
+  'Jiu Jitsu',
+  'Dance',
+  'Spinning',
+  'Strength Training'
+];
+
+export const integrationModes = [
+  {
+    title: 'Standard Website',
+    summary: 'Classic public website experience with static content and direct contact flow.',
+    code: 'Static pricing, static classes, generic contact and trial forms.'
+  },
+  {
+    title: 'Pulse-Powered Website',
+    summary: 'Same public website feel, now enhanced with connected conversion and live business blocks.',
+    code: 'Live pricing, smart trial routing, dynamic class preview, connected portal.'
   }
 ];

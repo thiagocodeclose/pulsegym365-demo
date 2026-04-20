@@ -1,14 +1,29 @@
 'use client';
 
-import { FormEvent, useState } from 'react';
-import { useDemo } from './DemoProvider';
+import Script from 'next/script';
+import { FormEvent, useMemo, useState } from 'react';
+import { useSiteMode } from './SiteModeProvider';
+import { ModeBadge } from './ModeBadge';
+import { trialInterestOptions } from '@/lib/site-data';
+
+const baseUrl =
+  process.env.NEXT_PUBLIC_CODEGYM_URL || 'https://codegym-bolt.vercel.app';
+const gymSlug = process.env.NEXT_PUBLIC_GYM_SLUG || 'pulsegym365';
 
 type Result = { ok: boolean; message: string } | null;
 
 export function TrialForm() {
   const [result, setResult] = useState<Result>(null);
   const [loading, setLoading] = useState(false);
-  const { isActive } = useDemo();
+  const { mode, isPulse } = useSiteMode();
+
+  const helperText = useMemo(
+    () =>
+      isPulse
+        ? 'This trial form is connected to Pulse for lead attribution, smart routing, and automation-ready follow-up.'
+        : 'Simple website form for trial interest. Staff review and manual follow-up happen through regular inbox workflows.',
+    [isPulse]
+  );
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -24,9 +39,11 @@ export function TrialForm() {
       email: String(formData.get('email') || ''),
       phone: String(formData.get('phone') || ''),
       interest: String(formData.get('interest') || ''),
+      preferredTime: String(formData.get('preferredTime') || ''),
+      trainingGoal: String(formData.get('trainingGoal') || ''),
       smsConsent: formData.get('smsConsent') === 'on',
       waiverAccepted: formData.get('waiverAccepted') === 'on',
-      source: 'pulsegym-demo-form'
+      source: `pulsegym-demo-${mode}`
     };
 
     const response = await fetch('/api/demo-trial', {
@@ -37,10 +54,11 @@ export function TrialForm() {
 
     const data = (await response.json()) as { ok: boolean; message: string };
 
-    if (isActive && data.ok) {
+    if (isPulse && data.ok) {
       setResult({
         ok: true,
-        message: '✅ Lead captured via Form Bridge → CodeGym pipeline activated: AI follow-up scheduled, SMS drip queued, attribution tracked (source: website, page: free-trial).'
+        message:
+          'Lead captured with Pulse context: source attribution active, smart routing ready, and automated follow-up path prepared.'
       });
     } else {
       setResult(data);
@@ -52,35 +70,20 @@ export function TrialForm() {
 
   return (
     <div className="form-shell">
-      {isActive && (
-        <div style={{
-          display: 'inline-flex', alignItems: 'center', gap: '0.4rem',
-          padding: '0.4rem 0.8rem',
-          background: 'rgba(44, 207, 114, 0.12)',
-          border: '1px solid rgba(44, 207, 114, 0.25)',
-          borderRadius: 999, marginBottom: '0.75rem', color: '#2ccf72',
-        }}>
-          <span style={{
-            width: 7, height: 7, borderRadius: '50%',
-            background: '#2ccf72', boxShadow: '0 0 8px #2ccf72',
-            display: 'inline-block',
-          }} />
-          <span style={{ fontSize: '0.75rem', fontWeight: 700 }}>LIVE — Form Bridge active</span>
-        </div>
-      )}
-
+      {isPulse ? <Script src={`${baseUrl}/widgets/form-bridge.js`} strategy="lazyOnload" id="codegym-form-bridge" /> : null}
+      {isPulse ? <ModeBadge mode="pulse" text="Smart Lead Capture" /> : <ModeBadge mode="standard" text="Standard Trial Form" subtle />}
       <h2>Start your free trial</h2>
-      <p>
-        {isActive
-          ? 'This is the same website form — no changes to the HTML. The Form Bridge intercepts the submission and routes it into the CodeGym lead pipeline with AI follow-up.'
-          : 'Demo form ready to simulate the native website bridge. Later, this can post directly into Pulse for lead capture, attribution, AI follow-up, and member onboarding.'
-        }
-      </p>
+      <p>{helperText}</p>
 
       <form
         onSubmit={handleSubmit}
         className="form-grid"
-        {...(isActive ? { 'data-codegym-form': '', 'data-gym': 'pulsegym365', 'data-form-type': 'trial_pass' } : {})}
+        {...(isPulse ? {
+          'data-codegym-form': '',
+          'data-gym': gymSlug,
+          'data-form-type': 'trial_pass',
+          'data-success-url': '/free-trial',
+        } : {})}
       >
         <div className="form-row">
           <label htmlFor="firstName">First name</label>
@@ -100,28 +103,46 @@ export function TrialForm() {
         </div>
         <div className="form-row full">
           <label htmlFor="interest">Main interest</label>
-          <select id="interest" name="interest" defaultValue="All Access">
-            <option>All Access</option>
-            <option>Pilates</option>
-            <option>Yoga</option>
-            <option>Swimming</option>
-            <option>Boxing</option>
-            <option>Jiu Jitsu</option>
-            <option>Dance</option>
-            <option>Spinning</option>
-            <option>Gym Floor</option>
+          <select id="interest" name="interest" defaultValue={trialInterestOptions[0]}>
+            {trialInterestOptions.map((item) => (
+              <option key={item}>{item}</option>
+            ))}
           </select>
         </div>
+
+        {isPulse ? (
+          <>
+            <div className="form-row">
+              <label htmlFor="preferredTime">Preferred training time</label>
+              <select id="preferredTime" name="preferredTime" defaultValue="Early Morning">
+                <option>Early Morning</option>
+                <option>Midday</option>
+                <option>Evening</option>
+                <option>Weekend</option>
+              </select>
+            </div>
+            <div className="form-row">
+              <label htmlFor="trainingGoal">Primary goal</label>
+              <select id="trainingGoal" name="trainingGoal" defaultValue="General Fitness">
+                <option>General Fitness</option>
+                <option>Weight Loss</option>
+                <option>Strength and Performance</option>
+                <option>Mobility and Recovery</option>
+              </select>
+            </div>
+          </>
+        ) : null}
+
         <div className="form-row full">
           <label className="checkbox-row">
             <input type="checkbox" name="smsConsent" defaultChecked />
-            <span>I agree to receive demo SMS updates about my free trial and class options.</span>
+            <span>I agree to receive trial updates and class reminders.</span>
           </label>
         </div>
         <div className="form-row full">
           <label className="checkbox-row">
             <input type="checkbox" name="waiverAccepted" required />
-            <span>I accept the demo liability waiver and club terms.</span>
+            <span>I accept the trial participation and club terms.</span>
           </label>
         </div>
         <div className="form-row full">
@@ -133,16 +154,11 @@ export function TrialForm() {
 
       {result ? <div className={result.ok ? 'success-box' : 'form-note'}>{result.message}</div> : null}
 
-      {isActive && (
-        <div style={{
-          marginTop: '1rem', padding: '0.75rem 1rem',
-          background: 'rgba(42,109,246,0.08)',
-          border: '1px solid rgba(42,109,246,0.2)',
-          borderRadius: 12, fontSize: '0.78rem', color: '#aaa', lineHeight: 1.6,
-        }}>
-          <strong style={{ color: '#2a6df6' }}>Form Bridge pipeline:</strong> Lead created → AI scores interest → SMS welcome sent → Follow-up scheduled in 24h → If no conversion in 72h, AI re-engages automatically.
+      {isPulse ? (
+        <div className="pulse-form-note">
+          <strong>Pulse connected:</strong> Lead attribution, smart routing, and automation-ready follow-up are active in this view.
         </div>
-      )}
+      ) : null}
     </div>
   );
 }

@@ -39,7 +39,7 @@ export function ContactForm() {
   return (
     <div className="form-shell">
       <h2>Talk to the club</h2>
-      <p>Use this page as the website contact flow or later connect it to Pulse lead routing.</p>
+      <p>Ask about plans, class recommendations, schedules, or your first trial session.</p>
       <form onSubmit={handleSubmit} className="form-grid">
         <div className="form-row">
           <label htmlFor="name">Full name</label>

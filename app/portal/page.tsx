@@ -1,25 +1,34 @@
-import Link from 'next/link';
-import { SectionHeading } from '@/components/SectionHeading';
+'use client';
+
 import { PortalHostedLinks } from '@/components/PortalHostedLinks';
+import { SectionHeading } from '@/components/SectionHeading';
+import { useSiteMode } from '@/components/SiteModeProvider';
 
 export default function PortalPage() {
+  const { isPulse } = useSiteMode();
+
   return (
     <>
       <section className="page-hero">
         <div className="container page-hero-shell">
           <span className="eyebrow">Member portal</span>
-          <h1>A simple public entry point for members</h1>
+          <h1>Member access, bookings, billing, and account support</h1>
           <p>
-            This page demonstrates the website role clearly: the gym site helps members reach the portal quickly without turning the whole site into an application shell.
+            This page is the public front door for members. Keep it clear and simple while giving fast access to the tools they need.
           </p>
+          {isPulse ? <p className="portal-mode-copy">Pulse-powered mode adds connected shortcuts while keeping the same public website experience.</p> : null}
         </div>
       </section>
 
       <section className="section">
         <div className="container">
           <SectionHeading
-            title="Portal entry options"
-            description="Use this area for login, account management links, booking access, billing, or app download prompts once the real member portal is connected."
+            title="Member quick access"
+            description={
+              isPulse
+                ? 'Connected member actions can be surfaced here without turning this page into a software dashboard.'
+                : 'Standard mode keeps a clean institutional member entry point with clear navigation.'
+            }
           />
           <PortalHostedLinks />
         </div>

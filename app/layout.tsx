@@ -1,11 +1,23 @@
 import type { Metadata } from 'next';
+import { Bebas_Neue, Manrope } from 'next/font/google';
 import './globals.css';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
-import { DemoProvider } from '@/components/DemoProvider';
-import { DemoController } from '@/components/DemoController';
-import { GlobalWidgets } from '@/components/WidgetZone';
+import { SiteModeProvider } from '@/components/SiteModeProvider';
+import { SiteModeToggle } from '@/components/SiteModeToggle';
+import { GlobalWidgets } from '@/components/GlobalWidgets';
 import { site } from '@/lib/site-data';
+
+const headingFont = Bebas_Neue({
+  subsets: ['latin'],
+  weight: '400',
+  variable: '--font-headings'
+});
+
+const bodyFont = Manrope({
+  subsets: ['latin'],
+  variable: '--font-body'
+});
 
 export const metadata: Metadata = {
   title: `${site.name} | Demo Gym Website`,
@@ -16,14 +28,14 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body>
-        <DemoProvider>
+      <body className={`${headingFont.variable} ${bodyFont.variable}`}>
+        <SiteModeProvider>
           <Header />
+          <SiteModeToggle />
           <main>{children}</main>
           <Footer />
-          <DemoController />
           <GlobalWidgets />
-        </DemoProvider>
+        </SiteModeProvider>
       </body>
     </html>
   );
