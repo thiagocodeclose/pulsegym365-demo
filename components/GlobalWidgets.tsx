@@ -2,10 +2,7 @@
 
 import Script from 'next/script';
 import { useSiteMode } from './SiteModeProvider';
-
-const baseUrl =
-  process.env.NEXT_PUBLIC_CODEGYM_URL || 'https://codegym-bolt.vercel.app';
-const gymSlug = process.env.NEXT_PUBLIC_GYM_SLUG || 'pulsegym365';
+import { codegym } from '@/lib/site-data';
 
 export function GlobalWidgets() {
   const { isPulse } = useSiteMode();
@@ -15,7 +12,7 @@ export function GlobalWidgets() {
   // Universal script: auto-injects all enabled widgets including the floating AI Chat
   return (
     <Script
-      src={`${baseUrl}/w/${gymSlug}.js`}
+      src={`${codegym.baseUrl}/w/${codegym.gymSlug}.js`}
       strategy="lazyOnload"
       id="codegym-universal-loader"
     />

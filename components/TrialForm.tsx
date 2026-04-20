@@ -4,11 +4,7 @@ import Script from 'next/script';
 import { FormEvent, useMemo, useState } from 'react';
 import { useSiteMode } from './SiteModeProvider';
 import { ModeBadge } from './ModeBadge';
-import { trialInterestOptions } from '@/lib/site-data';
-
-const baseUrl =
-  process.env.NEXT_PUBLIC_CODEGYM_URL || 'https://codegym-bolt.vercel.app';
-const gymSlug = process.env.NEXT_PUBLIC_GYM_SLUG || 'pulsegym365';
+import { codegym, trialInterestOptions } from '@/lib/site-data';
 
 type Result = { ok: boolean; message: string } | null;
 
@@ -70,7 +66,7 @@ export function TrialForm() {
 
   return (
     <div className="form-shell">
-      {isPulse ? <Script src={`${baseUrl}/widgets/form-bridge.js`} strategy="lazyOnload" id="codegym-form-bridge" /> : null}
+      {isPulse ? <Script src={`${codegym.baseUrl}/widgets/form-bridge.js`} strategy="lazyOnload" id="codegym-form-bridge" /> : null}
       {isPulse ? <ModeBadge mode="pulse" text="Smart Lead Capture" /> : <ModeBadge mode="standard" text="Standard Trial Form" subtle />}
       <h2>Start your free trial</h2>
       <p>{helperText}</p>
@@ -80,7 +76,7 @@ export function TrialForm() {
         className="form-grid"
         {...(isPulse ? {
           'data-codegym-form': '',
-          'data-gym': gymSlug,
+          'data-gym': codegym.gymSlug,
           'data-form-type': 'trial_pass',
           'data-success-url': '/free-trial',
         } : {})}

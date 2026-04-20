@@ -2,10 +2,9 @@
 
 import { useSiteMode } from './SiteModeProvider';
 import { ModeBadge } from './ModeBadge';
+import { codegym } from '@/lib/site-data';
 
-const baseUrl =
-  process.env.NEXT_PUBLIC_CODEGYM_URL || 'https://codegym-bolt.vercel.app';
-const gymSlug = process.env.NEXT_PUBLIC_GYM_SLUG || 'pulsegym365';
+const { baseUrl, gymSlug } = codegym;
 
 const standardCards = [
   { title: 'Member Login', desc: 'Secure sign-in to check bookings and account details.' },

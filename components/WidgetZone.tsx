@@ -1,5 +1,7 @@
 'use client';
 
+import { codegym } from '@/lib/site-data';
+
 type WidgetType =
   | 'schedule'
   | 'pricing'
@@ -25,14 +27,10 @@ interface WidgetZoneProps {
   label?: string;
 }
 
-const baseUrl =
-  process.env.NEXT_PUBLIC_CODEGYM_URL || 'https://codegym-bolt.vercel.app';
-const gymSlug = process.env.NEXT_PUBLIC_GYM_SLUG || 'pulsegym365';
-
 export function WidgetZone({ widget, active, children, label }: WidgetZoneProps) {
   if (!active) return <>{children}</>;
 
-  const src = `${baseUrl}/${widget}/${gymSlug}?embed=1`;
+  const src = `${codegym.baseUrl}/${widget}/${codegym.gymSlug}?embed=1`;
 
   return (
     <div className={`widget-zone widget-zone--${widget}`}>
