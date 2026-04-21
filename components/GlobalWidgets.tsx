@@ -15,6 +15,7 @@ export function GlobalWidgets() {
       src={`${codegym.baseUrl}/w/${codegym.gymSlug}.js`}
       strategy="lazyOnload"
       id="codegym-universal-loader"
+      data-key={codegym.widgetKey}
     />
   );
 }

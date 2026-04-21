@@ -2,8 +2,9 @@ export type SiteMode = 'standard' | 'pulse';
 
 // CodeGym integration constants — update here when going to production
 export const codegym = {
-  baseUrl: 'https://codegym-bolt.vercel.app',
-  gymSlug: 'pulsegym365'
+  baseUrl: process.env.NEXT_PUBLIC_CODEGYM_URL || 'https://codegym-bolt.vercel.app',
+  gymSlug: process.env.NEXT_PUBLIC_GYM_SLUG || 'pulsegym365',
+  widgetKey: process.env.NEXT_PUBLIC_WIDGET_KEY || ''
 };
 
 export const site = {
