@@ -23,7 +23,7 @@ export function Footer() {
         </div>
         <div>
           <h4>Hours</h4>
-          <WidgetZone widget="hours" active={isPulse} label="Live studio hours">
+          <WidgetZone widget="info" active={isPulse} label="Live studio hours">
             <>
               {site.hours.map((item) => (
                 <p key={item}>{item}</p>

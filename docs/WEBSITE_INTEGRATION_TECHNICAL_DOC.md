@@ -1,118 +1,126 @@
 # Website Widget Integration System — Technical Documentation
 
-**Date:** April 20, 2026  
-**Status:** ✅ Complete — Phases 0-3 + Sprints 1-4 + Sales Demo Controller Layer  
+**Date:** April 22, 2026  
+**Status:** ✅ Complete — BFF Architecture (v3.0) + Sales Demo Layer  
 **Platform:** CodeGym — AI-Powered Gym Management SaaS
+
+---
+
+## ⚠️ BREAKING CHANGE — Architecture Update (April 22, 2026)
+
+The widget system was **migrated from direct Supabase RPCs to a BFF (Backend for Frontend) gateway pattern**. Any agent or developer working on this project must use the new architecture described below.
+
+### What changed
+| Before (v2) | After (v3 — current) |
+|---|---|
+| Iframes called Supabase RPCs directly with anon key | All data flows through `/api/widgets/*` gateway routes on `app.codegyms.com` |
+| `data-supabase-url` / `data-supabase-key` meta tags | **Removed** — never acceptable to expose credentials on gym sites |
+| `codegym-bolt.vercel.app` as base URL | **`app.codegyms.com`** is the production domain |
+| Write operations: no auth required | Write operations require `widget_public_key` UUID |
+| `hours` widget type | **Renamed to `info`** — includes hours, address, contact details |
 
 ---
 
 ## 1. Overview
 
-The Website Widget Integration System enables gym owners to embed interactive, AI-powered widgets on their websites. The system uses an iframe-based architecture with a Universal JS Loader, serving data through public Supabase RPCs with full RLS protection.
+The Website Widget Integration System enables gym owners to embed interactive widgets on their websites via iframes. The system uses a **BFF gateway** so that **zero Supabase credentials are ever exposed on external gym websites**.
 
 **Key architectural decisions:**
-- **iframe isolation** (not web components) — guaranteed CSS sandboxing, security, reuses Next.js pages
-- **Slug-based URLs** (not gym_id) — SEO-friendly, consistent with existing public pages (`/signup/[slug]`)
-- **No API routes** for widget data — direct Supabase RPCs per project standard
-- **4-layer configuration** — Conversion Mode → Widget Toggles → Theme & Branding → Per-Widget Overrides
-- **CSS custom properties** — Theme passed to iframes via URL params, applied as CSS variables
+- **iframe isolation** — CSS sandboxing, security, reuses Next.js pages at `/widgets/[type]/[slug]`
+- **BFF gateway** — all widget data flows server-side through `/api/widgets/config`, never directly to Supabase
+- **Slug-based URLs** — `https://app.codegyms.com/widgets/[type]/[slug]`
+- **widget_public_key** — UUID required for all write operations (leads, bookings, AI)
 - **4 integration modes** — Universal script, Individual widgets, Direct links, Native Form Bridge
+
+### Security model
+
+| Operation | Auth required | How |
+|---|---|---|
+| READ (schedule, pricing, info, etc.) | slug only | Data is public, no key needed |
+| WRITE (leads, bookings, AI agent) | slug + `widget_public_key` UUID | Key in `data-key` attribute |
+| EMBED (iframes) | — | `frame-ancestors` CSP per allowed domain |
 
 ### 1.1 Sales Demo Controller Layer (Before/After Showcase)
 
-To improve sales enablement and reduce implementation friction, a demo layer was added in the `pulsegym365-demo` website.
-
-This layer allows real-time toggling between:
-
-- **Static website mode** (baseline)
-- **CodeGym-enabled mode** (dynamic)
-
-The objective is to prove that integration is incremental and low-friction, without requiring a full website rebuild.
+The `pulsegym365-demo` website demonstrates the before/after integration toggle.
 
 #### Components
 
 | Component | File | Responsibility |
 |---|---|---|
-| `DemoProvider` | `components/DemoProvider.tsx` | Global demo state (`isActive`) + per-route integration metadata and code snippets |
-| `DemoController` | `components/DemoController.tsx` | Floating control panel with mode toggle, integration description, and copyable snippets |
-| `WidgetZone` | `components/WidgetZone.tsx` | Conditional renderer: static blocks (OFF) vs widget iframes (ON) |
-| `PortalHostedLinks` | `components/PortalHostedLinks.tsx` | Hosted-pages demonstration for signup/portal/chat links |
-| `GlobalWidgets` | `components/WidgetZone.tsx` | Site-wide AI Chat injection during demo mode |
+| `SiteModeProvider` | `components/SiteModeProvider.tsx` | Global mode state (`standard` vs `pulse`) |
+| `SiteModeToggle` | `components/SiteModeToggle.tsx` | UI toggle button |
+| `WidgetZone` | `components/WidgetZone.tsx` | Conditional: static content (standard) vs iframe (pulse) |
+| `DynamicClassesPreview` | `components/DynamicClassesPreview.tsx` | `/classes` page dynamic widget |
+| `DynamicPricingPreview` | `components/DynamicPricingPreview.tsx` | `/pricing` page dynamic widget |
+| `GlobalWidgets` | `components/GlobalWidgets.tsx` | Site-wide widgets (AI Chat, lead capture) |
 
-#### Per-route mapping used in the demo
+#### Per-route widget mapping
 
-| Route | Integration Mode | Dynamic behavior when ON |
+| Route | Widget type | iframe URL |
 |---|---|---|
-| `/` | Universal Script | Global Chat and dynamic blocks enabled |
-| `/classes` | Individual Widget | Schedule widget replaces static class sections |
-| `/pricing` | Individual Widget | Pricing widget replaces static plan cards |
-| `/trainers` | Individual Widget | Instructors widget replaces static bios |
-| `/contact` | Individual Widget | Studio info widget replaces static info block |
-| `/free-trial` | Native Form Bridge | Existing form preserved, with `data-codegym-form` attributes |
-| `/portal` | Hosted Pages | Direct links to CodeGym-hosted flows |
+| `/` footer Hours section | `info` | `https://app.codegyms.com/widgets/info/pulsegym?embed=1` |
+| `/classes` | `schedule` | `https://app.codegyms.com/widgets/schedule/pulsegym?embed=1` |
+| `/pricing` | `pricing` | `https://app.codegyms.com/widgets/pricing/pulsegym?embed=1` |
+| `/trainers` | `instructors` | `https://app.codegyms.com/widgets/instructors/pulsegym?embed=1` |
+| `/contact` | `info` | `https://app.codegyms.com/widgets/info/pulsegym?embed=1` |
 
-#### Runtime configuration
+#### Runtime configuration (environment variables)
 
-- `NEXT_PUBLIC_CODEGYM_URL` (default: `https://codegym-bolt.vercel.app`)
-- `NEXT_PUBLIC_GYM_SLUG` (default: `pulsegym365`)
-
-#### Technical note
-
-This demo layer is a **presentation/enablement module** and does not alter the core widget backend architecture. It reuses existing widget routes (`/widgets/[type]/[slug]`) and Form Bridge behavior to demonstrate production integration paths with minimal code.
+```env
+NEXT_PUBLIC_CODEGYM_URL=https://app.codegyms.com    # Production domain — NOT codegym-bolt.vercel.app
+NEXT_PUBLIC_GYM_SLUG=pulsegym
+NEXT_PUBLIC_WIDGET_KEY=ef968315-2b18-41fb-b23b-94348e0eb875   # Required for write ops
+```
 
 ---
 
-## 2. Architecture Diagram
+## 2. Architecture Diagram (v3 — BFF)
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
-│                        GYM OWNER'S WEBSITE                              │
+│                     GYM OWNER'S WEBSITE (e.g. pulsegym365-demo)        │
 │                                                                         │
-│  Option 1: <script src="codegym.com/w/my-gym.js"></script>             │
-│  Option 2: <div data-codegym="schedule" data-gym="my-gym"></div>       │
-│  Option 3: Direct link → codegym.com/schedule/my-gym                   │
-│  Option 4: Native Form Bridge → CodeGym.submitForm() / form-bridge.js  │
+│  Option 1 (Universal):                                                  │
+│    <script src="https://app.codegyms.com/widgets/loader.js"            │
+│      data-gym="pulsegym" data-key="UUID"></script>                     │
 │                                                                         │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐                 │
-│  │ loader.js    │  │ loader.js    │  │ (no loader)  │                 │
-│  │ Auto-inject  │  │ Find divs    │  │ Full page    │                 │
-│  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘                 │
-│         │                  │                  │                         │
-│         ▼                  ▼                  ▼                         │
-│  ┌─────────────────────────────────────────────────┐                   │
-│  │              IFRAME SANDBOX                      │                   │
-│  │  codegym.com/schedule/my-gym?embed=1&theme=...  │                   │
-│  │  codegym.com/pricing/my-gym?embed=1&theme=...   │                   │
-│  │  codegym.com/chat/my-gym?embed=1&theme=...      │                   │
-│  └──────────────────┬──────────────────────────────┘                   │
-│                     │ postMessage (cross-widget bus)                    │
-└─────────────────────┼──────────────────────────────────────────────────┘
-                      │
+│  Option 2 (Individual):                                                 │
+│    <div data-codegym="schedule" data-gym="pulsegym"></div>             │
+│                                                                         │
+│  Option 3 (Direct iframe / WidgetZone component):                      │
+│    <iframe src="https://app.codegyms.com/widgets/info/pulsegym         │
+│      ?embed=1" .../>                                                    │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+                      │ iframe request
                       ▼
 ┌─────────────────────────────────────────────────────────────────────────┐
-│                      CODEGYM BACKEND (Supabase)                         │
+│               app.codegyms.com  (Next.js — codegym_bolt)               │
 │                                                                         │
-│  Public RPCs (anon key, read-only):                                    │
-│  ├── get_public_widget_config(slug) → config + theme + enabled widgets │
-│  ├── get_public_schedule(slug)      → classes, times, spots            │
-│  ├── get_public_instructors(slug)   → name, bio, photo, schedule       │
-│  ├── get_public_pricing(slug)       → plans, prices, features          │
-│  ├── get_public_reviews(slug)       → ratings, testimonials            │
-│  ├── get_public_studio_info(slug)   → hours, address, amenities        │
-│  ├── get_public_events(slug)        → workshops, special classes       │
-│  ├── get_public_community_stats(slug) → real achievements, challenges  │
-│  ├── get_public_social_proof(slug)  → real member counts, activity     │
-│  ├── get_public_appointments(slug)  → PT instructors, available slots  │
-│  ├── get_public_gift_cards(slug)    → gift card products + Stripe      │
-│  └── get_public_waitlist_info(slug) → full classes + waitlist status   │
+│  Widget Pages:  /widgets/[type]/[slug]                                 │
+│  ├── /widgets/info/pulsegym        ← hours, address, contact           │
+│  ├── /widgets/schedule/pulsegym   ← class schedule                    │
+│  ├── /widgets/pricing/pulsegym    ← membership plans                  │
+│  ├── /widgets/instructors/pulsegym ← trainer bios                     │
+│  ├── /widgets/lead_capture/pulsegym ← lead form (requires key)        │
+│  ├── /widgets/chat/pulsegym        ← AI chat (requires key)           │
+│  └── ... (20 total widget types)                                       │
 │                                                                         │
-│  Write RPCs (anon, rate-limited):                                      │
-│  ├── capture_widget_lead(slug, data) → create lead + attribution       │
-│  └── ping_widget_install(slug)       → update installation status      │
+│  BFF API Gateway:                                                       │
+│  ├── GET /api/widgets/config?slug=pulsegym  → widget config (service role) │
+│  ├── GET /api/widgets/seo-bundle?slug=...   → SEO data                │
+│  ├── POST /api/widgets/telemetry            → track events             │
+│  └── POST /api/public/form-bridge           → leads/bookings (+ key)  │
 │                                                                         │
-│  RLS Policies:                                                         │
-│  ├── Anon: SELECT on enabled configs, public data RPCs                 │
-│  └── Staff: ALL on own gym's widget config via user_gym_access         │
+│  Loader:  /widgets/loader.js  (v3.0 — BFF pattern)                    │
+└─────────────────────────────────────────────────────────────────────────┘
+                      │ server-side only (SUPABASE_SERVICE_ROLE_KEY)
+                      ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│                        Supabase (never exposed to browser)              │
+│  widget_public_key in website_widget_config — validate_widget_key()   │
+│  capture_widget_lead(), form_bridge_submit(), ping_widget_install()    │
 └─────────────────────────────────────────────────────────────────────────┘
 ```
 
