@@ -11,6 +11,7 @@ import { SectionHeading } from '@/components/SectionHeading';
 import { StatCounter } from '@/components/StatCounter';
 import { TrainerCard } from '@/components/TrainerCard';
 import { useSiteMode } from '@/components/SiteModeProvider';
+import { WidgetZone } from '@/components/WidgetZone';
 import {
   comparisonRows,
   facilities,
@@ -117,44 +118,46 @@ export default function HomePage() {
         <div className="container">
           <SectionHeading
             eyebrow="Class schedule"
-            title="60+ weekly classes across 8 training zones"
-            description="Early mornings, midday sessions, and late-night blocks — your schedule always has an option."
+            title={isPulse ? 'Live schedule — updated in real time' : '60+ weekly classes across 8 training zones'}
+            description={isPulse ? 'Connected to your CodeGym system. Classes, times, and availability update automatically.' : 'Early mornings, midday sessions, and late-night blocks \u2014 your schedule always has an option.'}
           />
-          <div className="schedule-grid">
-            {weeklySchedule.map((day) => (
-              <div key={day.day} className="schedule-day">
-                <div className="schedule-day-header">{day.day}</div>
-                <div className="schedule-day-slots">
-                  {day.slots.map((slot) => (
-                    <div key={slot.time} className={`schedule-slot accent-${slot.accent}`}>
-                      <time>{slot.time}</time>
-                      <span>{slot.name}</span>
-                    </div>
-                  ))}
+          <WidgetZone widget="schedule" active={isPulse} label="Live class schedule">
+            <div className="schedule-grid">
+              {weeklySchedule.map((day) => (
+                <div key={day.day} className="schedule-day">
+                  <div className="schedule-day-header">{day.day}</div>
+                  <div className="schedule-day-slots">
+                    {day.slots.map((slot) => (
+                      <div key={slot.time} className={`schedule-slot accent-${slot.accent}`}>
+                        <time>{slot.time}</time>
+                        <span>{slot.name}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
-          <div className="schedule-cta">
-            <Link href="/classes" className="button button-ghost">View full class catalog &rarr;</Link>
-          </div>
+              ))}
+            </div>
+          </WidgetZone>
+          {!isPulse && (
+            <div className="schedule-cta">
+              <Link href="/classes" className="button button-ghost">View full class catalog &rarr;</Link>
+            </div>
+          )}
         </div>
       </section>
 
-      <ModeAwareSection mode={mode} className="section">
-        <div className="container">
-          <SectionHeading
-            eyebrow="Featured classes"
-            title={isPulse ? 'Live class highlights from your connected schedule' : 'Featured classes this week'}
-            description={
-              isPulse
-                ? 'In Pulse-Powered mode, class cards show live schedule context, open spots, and class status directly on the public website.'
-                : 'In Standard mode, classes are showcased as strong static cards to support discovery and conversions.'
-            }
-          />
-          <DynamicClassesPreview classes={featuredClasses.slice(0, 4)} mode={mode} />
-        </div>
-      </ModeAwareSection>
+      {!isPulse && (
+        <ModeAwareSection mode={mode} className="section">
+          <div className="container">
+            <SectionHeading
+              eyebrow="Featured classes"
+              title="Featured classes this week"
+              description="In Standard mode, classes are showcased as strong static cards to support discovery and conversions."
+            />
+            <DynamicClassesPreview classes={featuredClasses.slice(0, 4)} mode={mode} />
+          </div>
+        </ModeAwareSection>
+      )}
 
       <ModeAwareSection mode={mode} className="section alt">
         <div className="container">
@@ -163,11 +166,13 @@ export default function HomePage() {
             title={isPulse ? 'Pricing connected and ready to stay current' : 'Membership options for every training style'}
             description={
               isPulse
-                ? 'Pulse-Powered mode highlights live pricing behavior while preserving the same premium gym website experience.'
+                ? 'Pulse-Powered mode shows live pricing directly from your system — no manual updates needed.'
                 : 'Standard mode presents polished, conversion-ready pricing cards for a traditional gym website.'
             }
           />
-          <DynamicPricingPreview plans={plans} mode={mode} />
+          <WidgetZone widget="pricing" active={isPulse} label="Live membership pricing">
+            <DynamicPricingPreview plans={plans} mode={mode} />
+          </WidgetZone>
         </div>
       </ModeAwareSection>
 
