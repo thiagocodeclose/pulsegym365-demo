@@ -30,7 +30,7 @@ A função principal deste repositório (pulsegym365-demo) é **demonstrar** com
 
 **Contém:**
 - Arquitetura da integração (componentes + fluxo)
-- Sales Demo Controller Layer (DemoProvider, DemoController, WidgetZone, PortalHostedLinks)
+- Sales Demo Controller Layer (SiteModeProvider, SiteModeToggle, WidgetZone, GlobalWidgets)
 - Per-route mapping (como cada página do site demo funciona)
 - Runtime configuration (env vars necessárias)
 - Database schema (tabelas de support)
@@ -62,7 +62,7 @@ A função principal deste repositório (pulsegym365-demo) é **demonstrar** com
 
 1. **Contexto:** Leia a seção de Executive Summary ("O que é Website Integration?")
 2. **Arquitetura:** Estude o diagrama de componentes em Technical Doc
-3. **Implementação:** Veja `components/DemoProvider.tsx`, `components/DemoController.tsx`, `components/WidgetZone.tsx`
+3. **Implementação:** Veja `components/SiteModeProvider.tsx`, `components/SiteModeToggle.tsx`, `components/WidgetZone.tsx`
 4. **Config:** Configure env vars (veja `.env.example` na raiz do repo)
 
 ### Para testar o Before/After:
@@ -70,7 +70,7 @@ A função principal deste repositório (pulsegym365-demo) é **demonstrar** com
 1. `npm run dev`
 2. Navegue para qualquer página (/, /classes, /pricing, /trainers, /contact, /free-trial, /portal)
 3. Clique no painel flutuante no canto inferior esquerdo (Demo Controller)
-4. Toggle "Ativar Demo" para alternar entre modo estático e modo CodeGym widgets
+4. Use o `SiteModeToggle` (canto inferior direito) para alternar entre modo `standard` e modo `pulse` (CodeGym widgets)
 5. Observe o código de integração exato que seria necessário
 
 ---
@@ -79,8 +79,8 @@ A função principal deste repositório (pulsegym365-demo) é **demonstrar** com
 
 | Componente | Arquivo | Responsabilidade |
 |-----------|---------|-----------------|
-| **DemoProvider** | `components/DemoProvider.tsx` | React Context global — gerencia estado de demo + metadata por rota |
-| **DemoController** | `components/DemoController.tsx` | Painel flutuante — toggle, código exato, copy button |
+| **SiteModeProvider** | `components/SiteModeProvider.tsx` | React Context global — gerencia modo `standard` vs `pulse` |
+| **SiteModeToggle** | `components/SiteModeToggle.tsx` | Toggle de modo — alterna entre site estático e CodeGym widgets |
 | **WidgetZone** | `components/WidgetZone.tsx` | Renderer condicional — mostra conteúdo estático OU iframe com widget |
 | **GlobalWidgets** | `components/GlobalWidgets.tsx` | Injeção global de AI Chat quando demo está ativa |
 | **PortalHostedLinks** | `components/PortalHostedLinks.tsx` | Demo de Hosted Pages (modo ON) vs cards estáticos (modo OFF) |
@@ -90,8 +90,9 @@ A função principal deste repositório (pulsegym365-demo) é **demonstrar** com
 ## 📡 Environment Variables
 
 ```bash
-NEXT_PUBLIC_CODEGYM_URL=https://staging.codegym.io
-NEXT_PUBLIC_GYM_SLUG=pulsegym365
+NEXT_PUBLIC_CODEGYM_URL=https://app.codegyms.com
+NEXT_PUBLIC_GYM_SLUG=pulsegym
+NEXT_PUBLIC_WIDGET_KEY=ef968315-2b18-41fb-b23b-94348e0eb875
 ```
 
 Se omitidos, os widgets não carregarão. Veja `.env.example`.

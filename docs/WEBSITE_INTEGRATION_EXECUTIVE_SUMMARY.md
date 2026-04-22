@@ -57,7 +57,7 @@ O visitante do site da academia vê horários interativos, planos com preços, m
 
 | Opção | Complexidade | Para Quem | Código |
 |-------|-------------|-----------|--------|
-| **🚀 Script Universal** | 1 linha de HTML | Dono que quer "instalar e esquecer" | `<script src="https://app.codegym.com/w/slug.js"></script>` |
+| **🚀 Script Universal** | 1 linha de HTML | Dono que quer "instalar e esquecer" | `<script src="https://app.codegyms.com/widgets/loader.js" data-gym="slug" data-key="UUID"></script>` |
 | **🎯 Widgets Individuais** | DIVs posicionadas | Dono que quer controle de layout | `<div data-codegym="schedule" data-gym="slug"></div>` |
 | **🔗 Links Diretos** | Zero código | Instagram, email, QR code | `codegym.com/schedule/slug` |
 | **🔌 Form Bridge Nativo** | 1 atributo no `<form>` | Academia que já tem formulário próprio | `<form data-codegym-form data-gym="slug">` |
@@ -66,7 +66,10 @@ O visitante do site da academia vê horários interativos, planos com preços, m
 
 ```html
 <!-- Cola no <head> do site — PRONTO! -->
-<script src="https://app.codegym.com/w/minha-academia.js"></script>
+<script src="https://app.codegyms.com/widgets/loader.js"
+  data-gym="minha-academia"
+  data-key="SEU_WIDGET_PUBLIC_KEY">
+</script>
 ```
 
 - Loader busca configuração da academia → injeta widgets habilitados automaticamente
@@ -76,7 +79,7 @@ O visitante do site da academia vê horários interativos, planos com preços, m
 ### Opção 2 — Widgets Individuais
 
 ```html
-<script src="https://app.codegym.com/w/loader.js"></script>
+<script src="https://app.codegyms.com/widgets/loader.js"></script>
 
 <!-- Na página "Aulas" -->
 <div data-codegym="schedule" data-gym="minha-academia"></div>
@@ -334,7 +337,10 @@ O visitante vê o layout real da sala → spots disponíveis em verde → clica 
 > Não encontramos mecanismo equivalente em nenhum concorrente direto.
 
 ```html
-<script src="https://app.codegym.com/w/minha-academia.js"></script>
+<script src="https://app.codegyms.com/widgets/loader.js"
+  data-gym="minha-academia"
+  data-key="SEU_WIDGET_PUBLIC_KEY">
+</script>
 ```
 
 Uma linha. O loader busca a configuração → injeta apenas os widgets habilitados → aplica as cores da academia → ativa comunicação entre widgets → pronto.
@@ -419,7 +425,8 @@ Cada widget pode ter configurações específicas:
 │  ┌─── CÓDIGO DE INSTALAÇÃO ─────────────────────────────────┐  │
 │  │ Tab: [Script Universal] [Widgets Individuais] [Links]     │  │
 │  │                                                           │  │
-│  │  <script src="https://app.codegym.com/w/slug.js">        │  │
+│  │  <script src="https://app.codegyms.com/widgets/loader.js" │  │
+│  │    data-gym="slug" data-key="UUID">               │  │
 │  │  </script>                                    [📋 Copiar] │  │
 │  │                                                           │  │
 │  │  [📧 Enviar instruções por email]                        │  │
@@ -438,7 +445,7 @@ Cada widget pode ter configurações específicas:
 | Dados sensíveis expostos | ✅ RPCs read-only, apenas dados públicos |
 | Abuso de API | ✅ Rate limiting por IP (10 req/min) |
 | Cross-origin attacks | ✅ CORS restrito + validação de origin no postMessage |
-| API keys no client | ✅ Nenhuma chave exposta — public RPCs via anon key |
+| API keys no client | ✅ Zero credenciais no browser — BFF gateway com service role server-side |
 | Script injection via widget | ✅ iframe sandbox + Content Security Policy |
 | Spam de leads | ✅ Rate limiting + honeypot fields + reCAPTCHA opcional |
 

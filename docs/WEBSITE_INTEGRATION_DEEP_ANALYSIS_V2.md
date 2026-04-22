@@ -23,7 +23,7 @@
 | Sprint 3 — AI Proactive | Exit intent, triggers, return visitor | ✅ COMPLETO | 5 trigger types, proactive config table, chat auto-open |
 | Sprint 3b — Appointment/PT | PT booking widget + instructor profiles | ✅ COMPLETO | Full widget with RPC, admin dashboard updated |
 | Sprint 4 — SEO + Gift Card + Waitlist + Chat | SEO mode, gift card, waitlist, AI chat widget page, storefront admin | ✅ COMPLETO | seo-renderer.js, 2 new widgets, chat page, storefront layer |
-| Sales Demo Controller | Before/After toggle showcase (pulsegym365-demo) | ✅ COMPLETO | DemoProvider, DemoController panel, WidgetZone, Form Bridge demo |
+| Sales Demo Controller | Before/After toggle showcase (pulsegym365-demo) | ✅ COMPLETO | SiteModeProvider, SiteModeToggle, WidgetZone, GlobalWidgets |
 | Sprint 5 — Store + A/B Testing | eCommerce widget + split testing | ❌ NÃO INICIADO | — |
 | Sprint 6 — Facebook + Multi-loc | Facebook embed + multi-location hub | ❌ NÃO INICIADO | — |
 
@@ -50,9 +50,9 @@
 | Diferencia contra concorrência | Nenhum concorrente tem esse padrão de demonstração | Vantagem de percepção de inovação |
 | Documenta integração | Cada página mostra snippet exato a usar | Sales → Customer em 5 min |
 
-**Componentes técnicos:** DemoProvider (contexto global), DemoController (painel flutuante), WidgetZone (renderer condicional), PortalHostedLinks (Hosted Pages), GlobalWidgets (Chat global).
+**Componentes técnicos:** SiteModeProvider (contexto global — `standard` vs `pulse`), SiteModeToggle (toggle de modo), WidgetZone (renderer condicional), GlobalWidgets (Chat global).
 
-**Repositório:** `pulsegym365-demo` (commit `27c1ac8`).
+**Repositório:** `pulsegym365-demo` (commit `1ed1297`).
 
 ---
 
