@@ -31,7 +31,7 @@ interface WidgetZoneProps {
 export function WidgetZone({ widget, active, children, label }: WidgetZoneProps) {
   if (!active) return <>{children}</>;
 
-  const src = `${codegym.baseUrl}/${widget}/${codegym.gymSlug}?embed=1`;
+  const src = `${codegym.baseUrl}/widgets/${widget}/${codegym.gymSlug}?embed=1`;
 
   return (
     <div className={`widget-zone widget-zone--${widget}`}>
