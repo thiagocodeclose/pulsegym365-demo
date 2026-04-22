@@ -12,9 +12,10 @@ export function GlobalWidgets() {
   // Universal script: auto-injects all enabled widgets including the floating AI Chat
   return (
     <Script
-      src={`${codegym.baseUrl}/w/${codegym.gymSlug}.js`}
+      src={`${codegym.baseUrl}/widgets/loader.js`}
       strategy="lazyOnload"
       id="codegym-universal-loader"
+      data-gym={codegym.gymSlug}
       data-key={codegym.widgetKey}
     />
   );
