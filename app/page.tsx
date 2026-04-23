@@ -279,18 +279,20 @@ export default function HomePage() {
             title="Why members stay"
             description="Strong routines are built when coaching, classes, and recovery all work together."
           />
-          <div className="testimonial-grid">
-            {testimonials.map((item) => (
-              <article key={item.name} className="testimonial-card">
-                <div className="testimonial-stars" aria-label={`${item.stars} out of 5 stars`}>
-                  {'\u2605'.repeat(item.stars)}
-                </div>
-                <blockquote>&ldquo;{item.quote}&rdquo;</blockquote>
-                <strong>{item.name}</strong>
-                <span>{item.role}</span>
-              </article>
-            ))}
-          </div>
+          <WidgetZone widget="reviews" active={isPulse} label="Live member reviews">
+            <div className="testimonial-grid">
+              {testimonials.map((item) => (
+                <article key={item.name} className="testimonial-card">
+                  <div className="testimonial-stars" aria-label={`${item.stars} out of 5 stars`}>
+                    {'\u2605'.repeat(item.stars)}
+                  </div>
+                  <blockquote>&ldquo;{item.quote}&rdquo;</blockquote>
+                  <strong>{item.name}</strong>
+                  <span>{item.role}</span>
+                </article>
+              ))}
+            </div>
+          </WidgetZone>
         </div>
       </section>
 
@@ -323,35 +325,37 @@ export default function HomePage() {
             title="Built in Utah. Easy to reach. Hard to leave."
             description="Central location with covered parking, bike storage, and direct transit access."
           />
-          <div className="location-grid">
-            <div className="location-map-art">
-              <div className="location-map-inner">
-                <span className="location-address-big">{site.addressLine1}</span>
-                <span className="location-address-sub">{site.addressLine2}</span>
+          <WidgetZone widget="info" active={isPulse} label="Live studio info">
+            <div className="location-grid">
+              <div className="location-map-art">
+                <div className="location-map-inner">
+                  <span className="location-address-big">{site.addressLine1}</span>
+                  <span className="location-address-sub">{site.addressLine2}</span>
+                </div>
+              </div>
+              <div className="location-details">
+                <div className="location-detail-item">
+                  <strong>Address</strong>
+                  <p>{site.address}</p>
+                </div>
+                <div className="location-detail-item">
+                  <strong>Parking</strong>
+                  <p>Free covered parking for 150+ vehicles. Overflow surface lot adjacent to the building.</p>
+                </div>
+                <div className="location-detail-item">
+                  <strong>Transit</strong>
+                  <p>2 minutes from Lehi TRAX station. Bike lanes on Garibaldi Way with secure bike storage at entry.</p>
+                </div>
+                <div className="location-detail-item">
+                  <strong>Accessibility</strong>
+                  <p>ADA-compliant entry, elevators, and accessible locker rooms across all floors.</p>
+                </div>
+                <div className="location-actions">
+                  <Link href="/contact" className="button button-ghost">Get directions &rarr;</Link>
+                </div>
               </div>
             </div>
-            <div className="location-details">
-              <div className="location-detail-item">
-                <strong>Address</strong>
-                <p>{site.address}</p>
-              </div>
-              <div className="location-detail-item">
-                <strong>Parking</strong>
-                <p>Free covered parking for 150+ vehicles. Overflow surface lot adjacent to the building.</p>
-              </div>
-              <div className="location-detail-item">
-                <strong>Transit</strong>
-                <p>2 minutes from Lehi TRAX station. Bike lanes on Garibaldi Way with secure bike storage at entry.</p>
-              </div>
-              <div className="location-detail-item">
-                <strong>Accessibility</strong>
-                <p>ADA-compliant entry, elevators, and accessible locker rooms across all floors.</p>
-              </div>
-              <div className="location-actions">
-                <Link href="/contact" className="button button-ghost">Get directions &rarr;</Link>
-              </div>
-            </div>
-          </div>
+          </WidgetZone>
         </div>
       </section>
 

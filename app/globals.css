@@ -1132,6 +1132,30 @@ textarea::placeholder {
   border-radius: 20px;
 }
 
+.widget-iframe--reviews {
+  min-height: 360px;
+}
+
+.widget-iframe--wod {
+  min-height: 420px;
+}
+
+.widget-iframe--social_proof {
+  min-height: 80px;
+}
+
+.widget-iframe--lead_capture {
+  min-height: 360px;
+}
+
+.widget-iframe--guest_pass {
+  min-height: 400px;
+}
+
+.widget-iframe--events {
+  min-height: 400px;
+}
+
 /* ── Promo Banner ─────────────────────────────────────────── */
 .promo-banner {
   background: linear-gradient(90deg, #bf5e00 0%, #F57C00 50%, #FF8F1F 100%);
