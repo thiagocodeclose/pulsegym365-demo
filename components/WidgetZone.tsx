@@ -22,7 +22,9 @@ type WidgetType =
   | 'waitlist'
   | 'hours'
   | 'classes'
-  | 'programs';
+  | 'programs'
+  | 'promo_banners'
+  | 'hero';
 
 interface WidgetZoneProps {
   widget: WidgetType;

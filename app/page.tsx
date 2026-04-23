@@ -113,6 +113,22 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* ── Promo Banners widget ── */}
+      <ModeAwareSection mode={mode} className="section-flush">
+        <WidgetZone widget="promo_banners" active={isPulse} label="Live promotional banners">
+          {/* Static fallback banners */}
+          <div className="promo-banners-static">
+            <div className="promo-banner-slide promo-banner-slide--default">
+              <div className="promo-banner-text">
+                <h2>SUMMER CHALLENGE</h2>
+                <p>3 months for the price of 2 — limited spots</p>
+                <a href="/sign-up" className="promo-banner-cta">Join Now</a>
+              </div>
+            </div>
+          </div>
+        </WidgetZone>
+      </ModeAwareSection>
+
       <div className="partners-bar">
         <div className="container promo-banner-inner">
           <span className="partners-label">Certified &amp; partnered with</span>
