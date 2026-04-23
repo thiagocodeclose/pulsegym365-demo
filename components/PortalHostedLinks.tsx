@@ -6,6 +6,8 @@ import { codegym } from '@/lib/site-data';
 
 const { baseUrl, gymSlug } = codegym;
 
+const portalUrl = codegym.memberPortalUrl || `${baseUrl}/portal/${gymSlug}`;
+
 const standardCards = [
   { title: 'Member Login', desc: 'Secure sign-in to check bookings and account details.' },
   { title: 'Class Bookings', desc: 'View and manage your existing class reservations.' },
@@ -13,32 +15,43 @@ const standardCards = [
   { title: 'Billing Support', desc: 'Get help with invoices and payment methods.' }
 ];
 
-const pulseCards = [
-  {
-    title: 'Bookings',
-    desc: 'Live class bookings and open spots synced from Pulse.',
-    cta: 'Open booking flow',
-    href: `${baseUrl}/schedule/${gymSlug}`
-  },
-  {
-    title: 'Membership',
-    desc: 'Connected plan details, upgrades, and renewal actions.',
-    cta: 'View membership options',
-    href: `${baseUrl}/pricing/${gymSlug}`
-  },
-  {
-    title: 'Billing',
-    desc: 'Billing access with connected account and payment history.',
-    cta: 'Manage billing',
-    href: `${baseUrl}/portal/${gymSlug}`
-  },
-  {
-    title: 'Free Trial',
-    desc: 'Guest pass and first trial booking linked to Pulse pipeline.',
-    cta: 'Claim guest pass',
-    href: `${baseUrl}/guest-pass/${gymSlug}`
-  }
-];
+const getPulseCards = () => {
+  const cards = [
+    {
+      title: 'Bookings',
+      desc: 'Live class bookings and open spots synced from Pulse.',
+      cta: 'Open booking flow',
+      href: `${baseUrl}/schedule/${gymSlug}`
+    },
+    {
+      title: 'Membership',
+      desc: 'Connected plan details, upgrades, and renewal actions.',
+      cta: 'View membership options',
+      href: `${baseUrl}/pricing/${gymSlug}`
+    },
+    {
+      title: 'Billing',
+      desc: 'Billing access with connected account and payment history.',
+      cta: 'Manage billing',
+      href: portalUrl
+    },
+    {
+      title: 'Free Trial',
+      desc: 'Guest pass and first trial booking linked to Pulse pipeline.',
+      cta: 'Claim guest pass',
+      href: `${baseUrl}/guest-pass/${gymSlug}`
+    },
+    ...(codegym.ecommerceUrl
+      ? [{
+          title: 'Shop',
+          desc: 'Browse gear, supplements, and merchandise from Pulse.',
+          cta: 'Visit our shop',
+          href: codegym.ecommerceUrl
+        }]
+      : [])
+  ];
+  return cards;
+};
 
 export function PortalHostedLinks() {
   const { isPulse } = useSiteMode();
@@ -71,6 +84,8 @@ export function PortalHostedLinks() {
     );
   }
 
+  const pulseCards = getPulseCards();
+
   return (
     <>
       <ModeBadge mode="pulse" text="Connected Portal Experience" />
@@ -100,7 +115,7 @@ export function PortalHostedLinks() {
           <a href={`${baseUrl}/guest-pass/${gymSlug}`} target="_blank" rel="noopener noreferrer" className="button button-ghost">
             Claim Guest Pass
           </a>
-          <a href={`${baseUrl}/portal/${gymSlug}`} target="_blank" rel="noopener noreferrer" className="button button-primary">
+          <a href={portalUrl} target="_blank" rel="noopener noreferrer" className="button button-primary">
             Open Member Access
           </a>
         </div>

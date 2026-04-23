@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { site } from '@/lib/site-data';
+import { site, codegym } from '@/lib/site-data';
 import { useSiteMode } from './SiteModeProvider';
 import { SiteModeToggle } from './SiteModeToggle';
 
@@ -17,6 +17,9 @@ const nav = [
 export function Header() {
   const { mode } = useSiteMode();
   const isPulse = mode === 'pulse';
+
+  const portalUrl = codegym.memberPortalUrl || '/portal';
+  const isExternalPortal = !!codegym.memberPortalUrl;
 
   return (
     <header className="site-header">
@@ -34,10 +37,26 @@ export function Header() {
         </nav>
 
         <div className="nav-actions">
+          {isPulse && codegym.ecommerceUrl && (
+            <a
+              href={codegym.ecommerceUrl}
+              className="button button-ghost"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Shop
+            </a>
+          )}
           {isPulse && (
-            <Link href="/portal" className="button button-ghost">
+            <a
+              href={portalUrl}
+              className="button button-ghost"
+              {...(isExternalPortal
+                ? { target: '_blank', rel: 'noopener noreferrer' }
+                : {})}
+            >
               Member Login
-            </Link>
+            </a>
           )}
           <Link href="/free-trial" className="button button-primary">
             Start Free Trial

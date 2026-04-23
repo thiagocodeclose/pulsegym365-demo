@@ -4,7 +4,11 @@ export type SiteMode = 'standard' | 'pulse';
 export const codegym = {
   baseUrl: process.env.NEXT_PUBLIC_CODEGYM_URL || 'https://app.codegyms.com',
   gymSlug: process.env.NEXT_PUBLIC_GYM_SLUG || 'pulsegym',
-  widgetKey: process.env.NEXT_PUBLIC_WIDGET_KEY || ''
+  widgetKey: process.env.NEXT_PUBLIC_WIDGET_KEY || '',
+  /** Full URL for the member portal (studio_settings.member_portal_url). */
+  memberPortalUrl: process.env.NEXT_PUBLIC_MEMBER_PORTAL_URL || '',
+  /** Full URL for the gym's online shop (studio_settings.ecommerce_url). */
+  ecommerceUrl: process.env.NEXT_PUBLIC_ECOMMERCE_URL || '',
 };
 
 export const site = {
