@@ -114,12 +114,27 @@ export default function HomePage() {
         </div>
       </ModeAwareSection>
 
-      <section className="section">
+      <ModeAwareSection mode={mode} className="section">
+        <div className="container">
+          <SectionHeading
+            eyebrow="Featured classes"
+            title={isPulse ? 'Live class highlights from your connected schedule' : 'Featured classes this week'}
+            description={
+              isPulse
+                ? 'Class cards show live schedule context, open spots, and availability — connected directly to your CodeGym system.'
+                : 'In Standard mode, classes are showcased as strong static cards to support discovery and conversions.'
+            }
+          />
+          <DynamicClassesPreview classes={featuredClasses.slice(0, 4)} mode={mode} />
+        </div>
+      </ModeAwareSection>
+
+      <section className="section alt">
         <div className="container">
           <SectionHeading
             eyebrow="Class schedule"
             title={isPulse ? 'Live schedule — updated in real time' : '60+ weekly classes across 8 training zones'}
-            description={isPulse ? 'Connected to your CodeGym system. Classes, times, and availability update automatically.' : 'Early mornings, midday sessions, and late-night blocks \u2014 your schedule always has an option.'}
+            description={isPulse ? 'Connected to your CodeGym system. Classes, times, and availability update automatically.' : 'Early mornings, midday sessions, and late-night blocks — your schedule always has an option.'}
           />
           <WidgetZone widget="schedule" active={isPulse} label="Live class schedule">
             <div className="schedule-grid">
@@ -138,26 +153,11 @@ export default function HomePage() {
               ))}
             </div>
           </WidgetZone>
-          {!isPulse && (
-            <div className="schedule-cta">
-              <Link href="/classes" className="button button-ghost">View full class catalog &rarr;</Link>
-            </div>
-          )}
+          <div className="schedule-cta">
+            <Link href="/classes" className="button button-ghost">View full class catalog &rarr;</Link>
+          </div>
         </div>
       </section>
-
-      {!isPulse && (
-        <ModeAwareSection mode={mode} className="section">
-          <div className="container">
-            <SectionHeading
-              eyebrow="Featured classes"
-              title="Featured classes this week"
-              description="In Standard mode, classes are showcased as strong static cards to support discovery and conversions."
-            />
-            <DynamicClassesPreview classes={featuredClasses.slice(0, 4)} mode={mode} />
-          </div>
-        </ModeAwareSection>
-      )}
 
       <ModeAwareSection mode={mode} className="section alt">
         <div className="container">
