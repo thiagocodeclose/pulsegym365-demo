@@ -1345,6 +1345,10 @@ textarea::placeholder {
   min-height: 400px;
 }
 
+.widget-iframe--programs {
+  min-height: 480px;
+}
+
 /* ── Promo Banner ─────────────────────────────────────────── */
 .promo-banner {
   background: linear-gradient(90deg, #bf5e00 0%, #F57C00 50%, #FF8F1F 100%);

@@ -21,7 +21,8 @@ type WidgetType =
   | 'gift_card'
   | 'waitlist'
   | 'hours'
-  | 'classes';
+  | 'classes'
+  | 'programs';
 
 interface WidgetZoneProps {
   widget: WidgetType;

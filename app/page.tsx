@@ -129,20 +129,23 @@ export default function HomePage() {
         <div className="container">
           <SectionHeading
             eyebrow="Training styles"
-            title="Choose your style. Build your week your way."
-            description="PulseGym is designed for variety and consistency, so members can train hard, recover smart, and stay engaged year-round."
+            title={isPulse ? 'All training programs — live from your system' : 'Choose your style. Build your week your way.'}
+            description={isPulse ? 'Every training modality your gym offers, connected directly to your CodeGym system.' : 'PulseGym is designed for variety and consistency, so members can train hard, recover smart, and stay engaged year-round.'}
           />
-          <div className="training-grid">
-            {trainingStyles.map((style) => (
-              <article key={style.name} className={`training-style-card accent-${style.accent}`}>
-                <div className="training-style-visual" />
-                <div className="training-style-body">
-                  <h3>{style.name}</h3>
-                  <p>{style.category}</p>
-                </div>
-              </article>
-            ))}
-          </div>
+          {isPulse && <LiveBadge />}
+          <WidgetZone widget="programs" active={isPulse} label="Live training programs">
+            <div className="training-grid">
+              {trainingStyles.map((style) => (
+                <article key={style.name} className={`training-style-card accent-${style.accent}`}>
+                  <div className="training-style-visual" />
+                  <div className="training-style-body">
+                    <h3>{style.name}</h3>
+                    <p>{style.category}</p>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </WidgetZone>
         </div>
       </ModeAwareSection>
 
@@ -157,7 +160,10 @@ export default function HomePage() {
                 : 'In Standard mode, classes are showcased as strong static cards to support discovery and conversions.'
             }
           />
-          <DynamicClassesPreview classes={featuredClasses.slice(0, 4)} mode={mode} />
+          {isPulse && <LiveBadge />}
+          <WidgetZone widget="classes" active={isPulse} label="Live featured classes">
+            <DynamicClassesPreview classes={featuredClasses.slice(0, 4)} mode={mode} />
+          </WidgetZone>
         </div>
       </ModeAwareSection>
 
