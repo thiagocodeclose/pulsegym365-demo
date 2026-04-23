@@ -5,7 +5,6 @@ import { ComparisonTable } from '@/components/ComparisonTable';
 import { DynamicClassesPreview } from '@/components/DynamicClassesPreview';
 import { DynamicPricingPreview } from '@/components/DynamicPricingPreview';
 import { FeatureStateCard } from '@/components/FeatureStateCard';
-import { ModeBadge } from '@/components/ModeBadge';
 import { ModeAwareSection } from '@/components/ModeAwareSection';
 import { SectionHeading } from '@/components/SectionHeading';
 import { StatCounter } from '@/components/StatCounter';
@@ -91,15 +90,17 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="hero-lifestyle-panel">
-            {isPulse ? <ModeBadge mode="pulse" text="Pulse-Powered website active" /> : null}
-            <div className="hero-lifestyle-art">
-              <div className="hero-lifestyle-overlay">
-                <h3>Train with structure, variety, and real coaching.</h3>
-                <p>From early-morning reformer to evening combat sessions, your week stays full of options.</p>
+          <WidgetZone widget="hero" active={isPulse} label="Live hero panel">
+            {/* Static fallback — Standard mode */}
+            <div className="hero-lifestyle-panel">
+              <div className="hero-lifestyle-art">
+                <div className="hero-lifestyle-overlay">
+                  <h3>Train with structure, variety, and real coaching.</h3>
+                  <p>From early-morning reformer to evening combat sessions, your week stays full of options.</p>
+                </div>
               </div>
             </div>
-          </div>
+          </WidgetZone>
         </div>
       </section>
 

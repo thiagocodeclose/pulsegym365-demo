@@ -1355,9 +1355,19 @@ textarea::placeholder {
   border-radius: 0;
 }
 
+.widget-zone--hero {
+  min-height: 540px;
+  border-radius: 24px;
+  overflow: hidden;
+  border: 1px solid rgba(245, 124, 0, 0.22);
+  position: relative;
+}
+
 .widget-iframe--hero {
-  min-height: 480px;
+  width: 100%;
+  min-height: 540px;
   border-radius: 0;
+  display: block;
 }
 
 /* ── section-flush: full-width with no padding ──────────────── */
