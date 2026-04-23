@@ -132,9 +132,41 @@ export default function HomePage() {
       <section className="section alt">
         <div className="container">
           <SectionHeading
+            eyebrow="Class catalog"
+            title={isPulse ? 'All classes — live from your system' : '60+ weekly classes across 8 training zones'}
+            description={isPulse ? 'Every class your gym offers with images, difficulty, duration, and booking — always current from your system.' : 'Early mornings, midday sessions, and late-night blocks — your schedule always has an option.'}
+          />
+          <WidgetZone widget="classes" active={isPulse} label="Live class catalog">
+            <WidgetZone widget="schedule" active={false} label="">
+              <div className="schedule-grid">
+                {weeklySchedule.map((day) => (
+                  <div key={day.day} className="schedule-day">
+                    <div className="schedule-day-header">{day.day}</div>
+                    <div className="schedule-day-slots">
+                      {day.slots.map((slot) => (
+                        <div key={slot.time} className={`schedule-slot accent-${slot.accent}`}>
+                          <time>{slot.time}</time>
+                          <span>{slot.name}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </WidgetZone>
+          </WidgetZone>
+          <div className="schedule-cta">
+            <Link href="/classes" className="button button-ghost">View full class catalog &rarr;</Link>
+          </div>
+        </div>
+      </section>
+
+      <section className="section">
+        <div className="container">
+          <SectionHeading
             eyebrow="Class schedule"
-            title={isPulse ? 'Live schedule — updated in real time' : '60+ weekly classes across 8 training zones'}
-            description={isPulse ? 'Connected to your CodeGym system. Classes, times, and availability update automatically.' : 'Early mornings, midday sessions, and late-night blocks — your schedule always has an option.'}
+            title={isPulse ? 'Live schedule — updated in real time' : 'Weekly schedule highlights'}
+            description={isPulse ? 'Connected to your CodeGym system. Classes, times, and availability update automatically.' : 'A snapshot of what a typical week looks like at PulseGym.'}
           />
           <WidgetZone widget="schedule" active={isPulse} label="Live class schedule">
             <div className="schedule-grid">
@@ -154,7 +186,7 @@ export default function HomePage() {
             </div>
           </WidgetZone>
           <div className="schedule-cta">
-            <Link href="/classes" className="button button-ghost">View full class catalog &rarr;</Link>
+            <Link href="/classes" className="button button-ghost">Book a class &rarr;</Link>
           </div>
         </div>
       </section>

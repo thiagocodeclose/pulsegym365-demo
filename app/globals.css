@@ -1123,6 +1123,15 @@ textarea::placeholder {
   min-height: 160px;
 }
 
+.widget-iframe--classes {
+  min-height: 600px;
+}
+
+.widget-iframe--chat {
+  min-height: 520px;
+  border-radius: 20px;
+}
+
 /* ── Promo Banner ─────────────────────────────────────────── */
 .promo-banner {
   background: linear-gradient(90deg, #bf5e00 0%, #F57C00 50%, #FF8F1F 100%);
