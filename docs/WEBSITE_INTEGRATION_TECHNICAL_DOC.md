@@ -1,126 +1,184 @@
 # Website Widget Integration System — Technical Documentation
 
-**Date:** April 22, 2026  
-**Status:** ✅ Complete — BFF Architecture (v3.0) + Sales Demo Layer  
+**Date:** April 23, 2026  
+**Status:** ✅ Sprint 7 Complete — AI Chat Agent V2 (Agent Persona + Avatar Upload + Auto-Language Detection + Conversations Dashboard)  
 **Platform:** CodeGym — AI-Powered Gym Management SaaS
-
----
-
-## ⚠️ BREAKING CHANGE — Architecture Update (April 22, 2026)
-
-The widget system was **migrated from direct Supabase RPCs to a BFF (Backend for Frontend) gateway pattern**. Any agent or developer working on this project must use the new architecture described below.
-
-### What changed
-| Before (v2) | After (v3 — current) |
-|---|---|
-| Iframes called Supabase RPCs directly with anon key | All data flows through `/api/widgets/*` gateway routes on `app.codegyms.com` |
-| `data-supabase-url` / `data-supabase-key` meta tags | **Removed** — never acceptable to expose credentials on gym sites |
-| `codegym-bolt.vercel.app` as base URL | **`app.codegyms.com`** is the production domain |
-| Write operations: no auth required | Write operations require `widget_public_key` UUID |
-| `hours` widget type | **Renamed to `info`** — includes hours, address, contact details |
 
 ---
 
 ## 1. Overview
 
-The Website Widget Integration System enables gym owners to embed interactive widgets on their websites via iframes. The system uses a **BFF gateway** so that **zero Supabase credentials are ever exposed on external gym websites**.
+The Website Widget Integration System enables gym owners to embed interactive, AI-powered widgets on their websites. The system uses an iframe-based architecture with a Universal JS Loader, serving data through a **secure API Gateway (BFF pattern)** — no Supabase credentials are ever exposed on external gym websites.
 
 **Key architectural decisions:**
-- **iframe isolation** — CSS sandboxing, security, reuses Next.js pages at `/widgets/[type]/[slug]`
-- **BFF gateway** — all widget data flows server-side through `/api/widgets/config`, never directly to Supabase
-- **Slug-based URLs** — `https://app.codegyms.com/widgets/[type]/[slug]`
-- **widget_public_key** — UUID required for all write operations (leads, bookings, AI)
+- **iframe isolation** (not web components) — guaranteed CSS sandboxing, security, reuses Next.js pages
+- **Slug-based URLs** (not gym_id) — SEO-friendly, consistent with existing public pages (`/signup/[slug]`)
+- **BFF API Gateway** for all external requests — no API routes for internal dashboard, but external widgets go through `/api/widgets/*` and `/api/public/*` server-side proxies. Zero Supabase credentials on external sites.
+- **widget_public_key** — UUID per gym, required for all write operations (leads, bookings, AI agent). READ operations remain keyless.
+- **4-layer configuration** — Conversion Mode → Widget Toggles → Theme & Branding → Per-Widget Overrides
+- **CSS custom properties** — Theme passed to iframes via URL params, applied as CSS variables
 - **4 integration modes** — Universal script, Individual widgets, Direct links, Native Form Bridge
 
-### Security model
+### 1.0 Security Architecture (BFF Pattern)
 
-| Operation | Auth required | How |
-|---|---|---|
-| READ (schedule, pricing, info, etc.) | slug only | Data is public, no key needed |
-| WRITE (leads, bookings, AI agent) | slug + `widget_public_key` UUID | Key in `data-key` attribute |
-| EMBED (iframes) | — | `frame-ancestors` CSP per allowed domain |
+All requests from external gym websites go through the CodeGym API Gateway. No Supabase credentials are ever exposed on external sites.
+
+```
+ External Gym Website (any domain)
+   │
+   ├── loader.js v3.0 (runs in gym's visitor browser)
+   │     │
+   │     │  Only: gym-slug + widget_public_key UUID
+   │     │  No Supabase URL. No anon key. Ever.
+   │     │
+   │     ▼
+   └── https://app.codegym.com/api/widgets/*   ← CodeGym API Gateway
+         │
+         │  Rate limit + CORS + input validation + key verification
+         │  Supabase SERVICE_ROLE_KEY stays here (server env)
+         │
+         ▼
+       Supabase (anon key / service key NEVER leave this layer)
+```
+
+**Two-layer security model:**
+1. **`widget_public_key`** — UUID per gym, required for all write RPCs (leads, bookings, form-bridge, AI agent, ping). Displayed in admin dashboard → gym copies into their `<script data-key="uuid">`. Regeneratable if leaked.
+2. **CSP `frame-ancestors`** — Server-side middleware enforces allowed domains for widget iframes. Prevents clickjacking and embedding from unauthorized domains.
+
+**READ operations** (schedule, pricing, instructors, etc.) remain keyless — this data is intentionally public, equivalent to the gym's own website content.
+
+**Previous pattern (removed):** loader.js previously had an "Option A" that accepted `<meta name="cg-supabase-url">` and `<meta name="cg-supabase-key">` meta tags from the embedding site, calling Supabase RPCs directly. This was removed in v3.0 because it would have required 100+ external gym websites to embed Supabase credentials in their HTML.
+
+### 1.1 API Gateway Routes
+
+| Route | Method | Auth Required | Description |
+|---|---|---|---|
+| `/api/widgets/config` | GET `?slug=` | None (read-only) | Proxy `get_public_widget_config` RPC |
+| `/api/widgets/ping` | POST | `widget_key` (UUID) | Proxy `ping_widget_install` RPC |
+| `/api/widgets/seo-bundle` | GET `?slug=` | None (read-only) | Proxy `get_public_seo_bundle` RPC |
+| `/api/widgets/telemetry` | POST | None (rate-limited) | Proxy `track_widget_event` RPC |
+| `/api/public/form-bridge` | POST | `widget_key` (UUID) | Proxy `form_bridge_submit` RPC |
+
+All gateway routes use `SUPABASE_SERVICE_ROLE_KEY` (server env var, never exposed). CORS headers allow `*` origin since domain-level restriction is handled by CSP `frame-ancestors`.
 
 ### 1.1 Sales Demo Controller Layer (Before/After Showcase)
 
-The `pulsegym365-demo` website demonstrates the before/after integration toggle.
+To improve sales enablement and reduce implementation friction, a demo layer was added in the `pulsegym365-demo` website.
+
+This layer allows real-time toggling between:
+
+- **Static website mode** (baseline)
+- **CodeGym-enabled mode** (dynamic)
+
+The objective is to prove that integration is incremental and low-friction, without requiring a full website rebuild.
 
 #### Components
 
 | Component | File | Responsibility |
 |---|---|---|
-| `SiteModeProvider` | `components/SiteModeProvider.tsx` | Global mode state (`standard` vs `pulse`) |
-| `SiteModeToggle` | `components/SiteModeToggle.tsx` | UI toggle button |
-| `WidgetZone` | `components/WidgetZone.tsx` | Conditional: static content (standard) vs iframe (pulse) |
-| `DynamicClassesPreview` | `components/DynamicClassesPreview.tsx` | `/classes` page dynamic widget |
-| `DynamicPricingPreview` | `components/DynamicPricingPreview.tsx` | `/pricing` page dynamic widget |
-| `GlobalWidgets` | `components/GlobalWidgets.tsx` | Site-wide widgets (AI Chat, lead capture) |
+| `DemoProvider` | `components/DemoProvider.tsx` | Global demo state (`isActive`) + per-route integration metadata and code snippets |
+| `DemoController` | `components/DemoController.tsx` | Floating control panel with mode toggle, integration description, and copyable snippets |
+| `WidgetZone` | `components/WidgetZone.tsx` | Conditional renderer: static blocks (OFF) vs widget iframes (ON) |
+| `PortalHostedLinks` | `components/PortalHostedLinks.tsx` | Hosted-pages demonstration for signup/portal/chat links |
+| `GlobalWidgets` | `components/WidgetZone.tsx` | Site-wide AI Chat injection during demo mode |
 
-#### Per-route widget mapping
+#### Per-route mapping used in the demo
 
-| Route | Widget type | iframe URL |
+| Route | Integration Mode | Dynamic behavior when ON |
 |---|---|---|
-| `/` footer Hours section | `info` | `https://app.codegyms.com/widgets/info/pulsegym?embed=1` |
-| `/classes` | `schedule` | `https://app.codegyms.com/widgets/schedule/pulsegym?embed=1` |
-| `/pricing` | `pricing` | `https://app.codegyms.com/widgets/pricing/pulsegym?embed=1` |
-| `/trainers` | `instructors` | `https://app.codegyms.com/widgets/instructors/pulsegym?embed=1` |
-| `/contact` | `info` | `https://app.codegyms.com/widgets/info/pulsegym?embed=1` |
+| `/` | Universal Script | Global Chat and dynamic blocks enabled |
+| `/classes` | Individual Widget | Schedule widget replaces static class sections |
+| `/pricing` | Individual Widget | Pricing widget replaces static plan cards |
+| `/trainers` | Individual Widget | Instructors widget replaces static bios |
+| `/contact` | Individual Widget | Studio info widget replaces static info block |
+| `/free-trial` | Native Form Bridge | Existing form preserved, with `data-codegym-form` attributes |
+| `/portal` | Hosted Pages | Direct links to CodeGym-hosted flows |
 
-#### Runtime configuration (environment variables)
+#### Runtime configuration
 
-```env
-NEXT_PUBLIC_CODEGYM_URL=https://app.codegyms.com    # Production domain — NOT codegym-bolt.vercel.app
-NEXT_PUBLIC_GYM_SLUG=pulsegym
-NEXT_PUBLIC_WIDGET_KEY=ef968315-2b18-41fb-b23b-94348e0eb875   # Required for write ops
-```
+- `NEXT_PUBLIC_CODEGYM_URL` (default: `https://codegym-bolt.vercel.app`)
+- `NEXT_PUBLIC_GYM_SLUG` (default: `pulsegym365`)
+- `NEXT_PUBLIC_WIDGET_KEY` — the gym's `widget_public_key` UUID, passed as `data-key` on the `<Script>` component
+
+> **Why does this Next.js demo need an env var?** Because `GlobalWidgets.tsx` uses Next.js `<Script>` (a React component), it cannot use inline HTML attributes directly — the key must come from an env var or `site-data.ts`. **Real gym websites** (WordPress, Wix, plain HTML) do not need any env var: they copy the ready-made snippet from **Admin → Website Widgets → Install Code**, which already has `data-key` hardcoded. The env var pattern is specific to this demo's React architecture.
+
+#### Technical note
+
+This demo layer is a **presentation/enablement module** and does not alter the core widget backend architecture. It reuses existing widget routes (`/widgets/[type]/[slug]`) and Form Bridge behavior to demonstrate production integration paths with minimal code.
 
 ---
 
-## 2. Architecture Diagram (v3 — BFF)
+## 2. Architecture Diagram
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
-│                     GYM OWNER'S WEBSITE (e.g. pulsegym365-demo)        │
+│                        GYM OWNER'S WEBSITE                              │
 │                                                                         │
-│  Option 1 (Universal):                                                  │
-│    <script src="https://app.codegyms.com/widgets/loader.js"            │
-│      data-gym="pulsegym" data-key="UUID"></script>                     │
+│  <script data-gym="slug" data-key="uuid">        (loader.js v3.0)      │
+│  <div data-codegym="schedule" data-gym="slug">   (individual)          │
+│  Direct link → codegym.com/schedule/slug         (zero code)           │
+│  <form data-codegym-form data-gym="slug">        (form-bridge)         │
 │                                                                         │
-│  Option 2 (Individual):                                                 │
-│    <div data-codegym="schedule" data-gym="pulsegym"></div>             │
+│  ⚠ NO Supabase credentials. NO meta tags. Only slug + widget_key.     │
 │                                                                         │
-│  Option 3 (Direct iframe / WidgetZone component):                      │
-│    <iframe src="https://app.codegyms.com/widgets/info/pulsegym         │
-│      ?embed=1" .../>                                                    │
-│                                                                         │
-└─────────────────────────────────────────────────────────────────────────┘
-                      │ iframe request
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐                 │
+│  │ loader.js    │  │ loader.js    │  │ (no loader)  │                 │
+│  │ Auto-inject  │  │ Find divs    │  │ Full page    │                 │
+│  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘                 │
+│         │ ↕ postMessage   │                  │                         │
+│         ▼                  ▼                  ▼                         │
+│  ┌─────────────────────────────────────────────────┐                   │
+│  │              IFRAME SANDBOX (our domain)         │                   │
+│  │  codegym.com/schedule/slug?embed=1&theme=...    │                   │
+│  │  codegym.com/pricing/slug?embed=1&theme=...     │                   │
+│  │  codegym.com/chat/slug?embed=1&theme=...        │                   │
+│  └──────────────────┬──────────────────────────────┘                   │
+└─────────────────────┼──────────────────────────────────────────────────┘
+                      │
                       ▼
 ┌─────────────────────────────────────────────────────────────────────────┐
-│               app.codegyms.com  (Next.js — codegym_bolt)               │
+│                   CODEGYM API GATEWAY (Next.js server)                  │
 │                                                                         │
-│  Widget Pages:  /widgets/[type]/[slug]                                 │
-│  ├── /widgets/info/pulsegym        ← hours, address, contact           │
-│  ├── /widgets/schedule/pulsegym   ← class schedule                    │
-│  ├── /widgets/pricing/pulsegym    ← membership plans                  │
-│  ├── /widgets/instructors/pulsegym ← trainer bios                     │
-│  ├── /widgets/lead_capture/pulsegym ← lead form (requires key)        │
-│  ├── /widgets/chat/pulsegym        ← AI chat (requires key)           │
-│  └── ... (20 total widget types)                                       │
+│  /api/widgets/config    GET  slug          → get_public_widget_config  │
+│  /api/widgets/ping      POST slug + key    → ping_widget_install        │
+│  /api/widgets/seo-bundle GET  slug         → get_public_seo_bundle     │
+│  /api/widgets/telemetry  POST slug + event → track_widget_event        │
+│  /api/public/form-bridge POST slug + key + data → form_bridge_submit   │
 │                                                                         │
-│  BFF API Gateway:                                                       │
-│  ├── GET /api/widgets/config?slug=pulsegym  → widget config (service role) │
-│  ├── GET /api/widgets/seo-bundle?slug=...   → SEO data                │
-│  ├── POST /api/widgets/telemetry            → track events             │
-│  └── POST /api/public/form-bridge           → leads/bookings (+ key)  │
+│  ✅ Rate limiting (IP-based)    ✅ Input validation                    │
+│  ✅ CORS headers                ✅ SUPABASE_SERVICE_ROLE_KEY (server)  │
+│  ✅ UUID format check           ✅ validate_widget_key(slug, key)      │
 │                                                                         │
-│  Loader:  /widgets/loader.js  (v3.0 — BFF pattern)                    │
-└─────────────────────────────────────────────────────────────────────────┘
-                      │ server-side only (SUPABASE_SERVICE_ROLE_KEY)
-                      ▼
+└──────────────────────────┬──────────────────────────────────────────────┘
+                           │
+                           ▼
 ┌─────────────────────────────────────────────────────────────────────────┐
-│                        Supabase (never exposed to browser)              │
-│  widget_public_key in website_widget_config — validate_widget_key()   │
-│  capture_widget_lead(), form_bridge_submit(), ping_widget_install()    │
+│                      CODEGYM BACKEND (Supabase)                         │
+│                                                                         │
+│  READ RPCs (no key required — data is intentionally public):           │
+│  ├── get_public_widget_config(slug)  → config + theme + enabled widgets│
+│  ├── get_public_schedule(slug)       → classes, times, spots           │
+│  ├── get_public_instructors(slug)    → name, bio, photo, schedule      │
+│  ├── get_public_pricing(slug)        → plans, prices, features         │
+│  ├── get_public_reviews(slug)        → ratings, testimonials           │
+│  ├── get_public_studio_info(slug)    → hours, address, amenities       │
+│  ├── get_public_events(slug)         → workshops, special classes      │
+│  ├── get_public_community_stats(slug)→ real achievements, challenges   │
+│  ├── get_public_social_proof(slug)   → real member counts, activity    │
+│  ├── get_public_appointments(slug)   → PT instructors, available slots │
+│  ├── get_public_gift_cards(slug)     → gift card products + Stripe     │
+│  └── get_public_waitlist_info(slug)  → full classes + waitlist status  │
+│                                                                         │
+│  WRITE RPCs (slug + widget_public_key required):                       │
+│  ├── validate_widget_key(slug, key) → gym_id (internal helper)        │
+│  ├── capture_widget_lead(slug, key, data) → lead + attribution         │
+│  ├── form_bridge_submit(slug, key, data)  → lead + form type           │
+│  ├── ping_widget_install(slug, key, url)  → update install status      │
+│  └── regenerate_widget_key(gym_id)  → new UUID (admin only)           │
+│                                                                         │
+│  RLS Policies:                                                         │
+│  ├── Anon: EXECUTE on read RPCs + write RPCs (validated by key)        │
+│  └── Staff: ALL on own gym's widget config via user_gym_access         │
 └─────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -142,6 +200,7 @@ Per-gym global widget configuration.
 | `installation_detected` | BOOLEAN | `false` | Whether loader.js has pinged from external site |
 | `installation_url` | TEXT | NULL | URL where loader was detected |
 | `last_ping_at` | TIMESTAMPTZ | NULL | Last installation ping timestamp |
+| `widget_public_key` | UUID | `gen_random_uuid()` | **Security key** — required for all write operations. Shown in admin Install Code tab. Regeneratable. |
 | `created_at` | TIMESTAMPTZ | `NOW()` | Record creation |
 | `updated_at` | TIMESTAMPTZ | `NOW()` | Last modification |
 
@@ -425,6 +484,406 @@ CREATE INDEX idx_class_schedules_date ON class_schedules(gym_id, status, schedul
 
 ---
 
+## 3.5 Theme Delivery Pipeline (Sprint 5 — P0 Fix)
+
+### Problem: Key Name Mismatch
+
+The theme customization system had a critical bug where **100% of gym color customizations were silently ignored** on real websites. The admin preview worked because it did its own manual key remapping, but the public API returned raw DB keys that `loader.js` could not understand.
+
+**Two incompatible naming conventions existed simultaneously:**
+
+| Stage | Keys Used | Why |
+|-------|-----------|-----|
+| Admin UI state + `theme_config` in DB | `primary_color`, `bg_color`, `text_color`, `mode`, `animations` | Historical naming convention |
+| `loader.js encodeThemeParams()` | `primary`, `background`, `text`, `theme_mode`, `animations_enabled` | CSS var-friendly short names |
+| Admin `buildPreviewUrl()` | Manual remap (worked in preview) | One-off fix in admin component |
+| `get_public_widget_config` before fix | Raw `wc.theme_config` (broken) | No remapping = wrong keys |
+
+### Fix: Remap in `get_public_widget_config`
+
+**File:** `FIX_THEME_CONFIG_KEY_MISMATCH.sql`
+
+The RPC now remaps keys before returning the public payload. No changes needed in the DB schema, admin UI, or `loader.js`:
+
+```sql
+-- BEFORE (bug): loader.js receives { primary_color: "#7C3AED", ... }
+--               encodeThemeParams sees: { primary: undefined }
+'theme', wc.theme_config
+
+-- AFTER (fix): loader.js receives { primary: "#7C3AED", ... }
+--              encodeThemeParams correctly maps → cg_primary URL param
+'theme', jsonb_build_object(
+  'primary',            wc.theme_config->>'primary_color',
+  'secondary',          wc.theme_config->>'secondary_color',
+  'accent',             wc.theme_config->>'accent_color',
+  'background',         wc.theme_config->>'bg_color',
+  'text',               wc.theme_config->>'text_color',
+  'cta_color',          wc.theme_config->>'cta_color',
+  'font_family',        wc.theme_config->>'font_family',
+  'border_radius',      wc.theme_config->>'border_radius',
+  'theme_mode',         wc.theme_config->>'mode',
+  'animations_enabled', (wc.theme_config->>'animations')::boolean,
+  'widget_style',       wc.theme_config->>'widget_style',
+  'bg_opacity',         (wc.theme_config->>'bg_opacity')::numeric
+)
+```
+
+### Complete Theme Pipeline (After Fix)
+
+```
+Admin UI (color picker)
+  │
+  │  saves: { primary_color: "#7C3AED", bg_color: "#FFF", mode: "light", ... }
+  ▼
+DB: website_widget_config.theme_config (JSONB)
+  │
+  │  get_public_widget_config() REMAPS keys
+  ▼
+/api/widgets/config response:
+  { theme: { primary: "#7C3AED", background: "#FFF", theme_mode: "light", ... } }
+  │
+  │  loader.js encodeThemeParams(theme)
+  ▼
+iframe URL params:
+  ?cg_primary=%237C3AED&cg_bg=%23FFF&cg_mode=light&...
+  │
+  │  widget-shell.tsx reads URL params → sets CSS vars
+  ▼
+CSS custom properties on <html>:
+  --cg-primary: #7C3AED
+  --cg-bg: #FFF
+  --cg-mode: light
+  (widget renders with gym's colors)
+```
+
+### `encodeThemeParams()` Key Mapping Reference
+
+| `loader.js` input key | URL param written | CSS var in widget |
+|-----------------------|-------------------|-------------------|
+| `primary` | `cg_primary` | `--cg-primary` |
+| `secondary` | `cg_secondary` | `--cg-secondary` |
+| `accent` | `cg_accent` | `--cg-accent` |
+| `background` | `cg_bg` | `--cg-bg` |
+| `text` | `cg_text` | `--cg-text` |
+| `cta_color` | `cg_cta` | `--cg-cta` |
+| `font_family` | `cg_font` | `--cg-font` |
+| `border_radius` | `cg_radius` | `--cg-radius` |
+| `theme_mode` | `cg_mode` | (body class `dark`/`light`) |
+| `animations_enabled` | `cg_anim` | (boolean toggle) |
+| `widget_style` | `cg_style` | (layout variant) |
+
+---
+
+## 3.6 Per-Widget Theme Overrides (Layer 4)
+
+### Architecture
+
+Each widget can override global theme colors independently. This enables distinct visual identities per widget without touching the global theme (e.g., Pricing widget with dark background + orange CTA, while Schedule uses the default light theme).
+
+**Data flow:**
+
+```
+website_widget_settings.theme_overrides (JSONB)
+  │  stored with loader.js keys already (primary, background, text, accent, cta_color)
+  │  ← NO remapping needed (unlike global theme_config)
+  ▼
+get_public_widget_config → widgets[].theme_overrides
+  │
+  ▼
+loader.js createWidgetIframe():
+  mergedTheme = Object.assign({}, globalTheme, widgetThemeOverrides)
+  // Per-widget overrides WIN over global theme
+  │
+  ▼
+iframe URL: ?cg_primary=...&cg_bg=...  (per-widget values override globals)
+```
+
+**Important:** `theme_overrides` in `website_widget_settings` already uses the loader.js key convention (`primary`, `background`, `text`, `accent`, `cta_color`) — no remapping is applied by the RPC. Only the global `theme_config` in `website_widget_config` required remapping (P0 fix above).
+
+### Admin UI — Color Override Modal (Sprint 5)
+
+The widget configuration modal (⚙️ button) now includes a "Widget Colors" section with 5 independent color pickers:
+
+| UI Label | State key | `theme_overrides` key |
+|----------|-----------|----------------------|
+| Primary Color | `primary` | `primary` |
+| Background | `background` | `background` |
+| Text Color | `text` | `text` |
+| Accent Color | `accent` | `accent` |
+| CTA Button | `cta_color` | `cta_color` |
+
+- Empty = inherit global theme (key omitted from `theme_overrides`)
+- Visual dot indicator appears when any override is active
+- "Reset to global theme" button clears all 5 overrides for the widget
+- State: `widgetThemeOverrides: Record<widgetType, Record<string, string>>`
+- Saved in: `website_widget_settings.theme_overrides` per widget type
+
+### `buildPreviewUrl()` in Admin
+
+The admin preview correctly applies per-widget colors AFTER global theme:
+
+```typescript
+// 1. Start with global theme_config
+const params = encodeGlobalTheme(themeConfig)
+// 2. Override with widget-specific colors (wins)
+const wto = widgetThemeOverrides[widgetType] || {}
+if (wto.primary)    params.set('cg_primary', wto.primary)
+if (wto.background) params.set('cg_bg', wto.background)
+if (wto.text)       params.set('cg_text', wto.text)
+if (wto.accent)     params.set('cg_accent', wto.accent)
+if (wto.cta_color)  params.set('cg_cta', wto.cta_color)
+```
+
+---
+
+## 3.7 Installation Health Check (Sprint 5)
+
+### Database Columns (on `website_widget_config`)
+
+| Column | Type | Description |
+|--------|------|-------------|
+| `installation_detected` | BOOLEAN | Set to `true` on first successful ping |
+| `installation_detected_at` | TIMESTAMPTZ | Timestamp of first ping (COALESCE — never overwritten) |
+| `installation_url` | TEXT | URL detected in first ping (preserved if subsequent pings send empty string) |
+| `last_ping_at` | TIMESTAMPTZ | **Updated on EVERY ping** — was previously never updated (P0 fix: `FIX_PING_WIDGET_LAST_PING.sql`) |
+
+**Bug fixed:** `ping_widget_install` previously only set `installation_detected = true` but never updated `last_ping_at`, so the health check always showed "Never" even for installed sites.
+
+### Ping Behavior (`ping_widget_install`)
+
+```sql
+-- P0 fix logic (simplified):
+UPDATE website_widget_config SET
+  installation_detected = true,
+  installation_detected_at = COALESCE(installation_detected_at, NOW()),  -- first ping only
+  installation_url = COALESCE(NULLIF(p_url, ''), installation_url),      -- preserve existing if empty
+  last_ping_at = NOW()  -- ALWAYS update
+WHERE gym_id = v_gym_id
+```
+
+### Admin UI Health Check Display
+
+The status card shows:
+- 🟢 **Live** with "Last seen Xm ago" (relative time via `timeAgo()` helper) when `installation_detected = true`
+- 🟡 **Not Detected** when `installation_detected = false`
+- Link to detected URL (opens in new tab)
+- "Target: URL" when configured but not yet detected
+- `installation_url` input field — gym owner sets their site URL before/after installation
+
+### `timeAgo()` Helper
+
+```typescript
+function timeAgo(dateStr: string | null): string {
+  if (!dateStr) return 'Never'
+  const diff = (Date.now() - new Date(dateStr).getTime()) / 1000
+  if (diff < 60)   return 'Just now'
+  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`
+  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`
+  return `${Math.floor(diff / 86400)}d ago`
+}
+```
+
+---
+
+## 3.9 AI Chat Agent V2 (Sprint 7 — Abril 2026)
+
+### Overview
+
+`app/widgets/chat/[slug]/page.tsx` and `app/api/ai/public-chat/route.ts` received a major update adding agent personalization, automatic language detection, and a conversations dashboard for gym admins.
+
+### New State (Widget)
+
+```typescript
+const [agentName, setAgentName]         = useState('');    // Displayed in chat header
+const [agentAvatar, setAgentAvatar]     = useState('');    // Avatar URL (img or Bot icon fallback)
+const [agentGreeting, setAgentGreeting] = useState('');    // First message override
+const [agentSpecialty, setAgentSpecialty] = useState('general'); // Behavior mode
+const [visitorLanguage, setVisitorLanguage] = useState(''); // Detected from navigator.language
+```
+
+### URL Override Params (passed by loader.js from overrides JSONB)
+
+| Param | Example | Description |
+|---|---|---|
+| `agent_name` | `"Pulse AI"` | Agent display name in chat header |
+| `agent_avatar_url` | `"https://...media/chat-agents/..."` | Avatar image URL (rounded-full) |
+| `agent_greeting` | `"Hi! Looking for a class?"` | First message shown to visitor |
+| `agent_specialty` | `"lead_conversion"` | AI behavior mode |
+
+### Language Resolution
+
+```
+Browser navigator.language   →  Widget normalizes to: en | pt-br | es | fr | de
+     ↓
+Widget sends visitor_language in each POST to /api/ai/public-chat
+     ↓
+API effectiveLanguage = gymLanguage !== 'en' ? gymLanguage : visitor_language
+     ↓
+System prompt: "LANGUAGE: Respond in {language}. Always match the visitor's language."
+     ↓
+public_chat_sessions.visitor_language = effectiveLanguage (persisted)
+```
+
+### New API Fields (`/api/ai/public-chat`)
+
+**Request additions:**
+
+| Field | Type | Description |
+|---|---|---|
+| `agent_name` | `string?` | Agent persona name (`You are {name}`) |
+| `agent_specialty` | `'lead_conversion' \| 'customer_service' \| 'general'` | Behavior block injected into system prompt |
+| `visitor_language` | `string?` | Detected browser language (`en`, `pt-br`, `es`, …) |
+
+**Session INSERT additions:**
+
+| Field | Column | Description |
+|---|---|---|
+| `visitor_language` | `public_chat_sessions.visitor_language` | Saved per session for dashboard analytics |
+
+### Admin Avatar Upload — `uploadAgentAvatar()`
+
+```typescript
+const filePath = `chat-agents/${gymId}_${Date.now()}.${ext}`;
+await supabase.storage.from('media').upload(filePath, file, { upsert: true });
+const { data: { publicUrl } } = supabase.storage.from('media').getPublicUrl(filePath);
+setWidgetOverrides(prev => ({ ...prev, chat: { ...prev.chat, agent_avatar_url: publicUrl } }));
+```
+
+Storage bucket: `media` (pre-existing). Path prefix: `chat-agents/`. No new bucket needed.
+
+### Conversations Dashboard
+
+**Route:** `app/dashboard/settings/website-widgets/conversations/page.tsx`  
+**Access:** Button "Conversations" in Website Widgets page header
+
+**Data source:** `public_chat_sessions` via direct Supabase client (user_gym_access auth).
+
+**Features:**
+
+| Feature | Implementation |
+|---|---|
+| Stats strip | 4 cards: total, escalated, emails captured, leads created |
+| Filter tabs | All / ⚠️ Escalated / 📧 Has Email / + Lead Pending |
+| Search | Client-side filter on `visitor_name`, `visitor_email`, `last_message` |
+| Session card | Expandable — shows name, email, badges (escalated / lead / language), message count, time ago |
+| Expanded detail | Last message + AI response + action buttons |
+| Create Lead | Inserts to `leads` table with `source: 'website_chat'`, links `lead_id` to session |
+| View Lead | Link to `/dashboard/sales?lead={lead_id}` |
+| Email visitor | `mailto:` link |
+| Language badge | Shows `PT-BR`, `ES`, etc. for non-English visitors |
+| Pagination | 25 per page, server-side via `.range()` |
+
+### SQL — `ADD_CHAT_AGENT_V2.sql`
+
+```sql
+ALTER TABLE public_chat_sessions
+  ADD COLUMN IF NOT EXISTS visitor_language TEXT;
+
+CREATE INDEX IF NOT EXISTS idx_chat_sessions_language
+  ON public_chat_sessions(gym_id, visitor_language);
+```
+
+**Apply:** `./run_sql.sh ADD_CHAT_AGENT_V2.sql`
+
+---
+
+## 3.8 Schedule Widget V2 (Sprint 6 — Abril 2026)
+
+### Overview
+
+`app/widgets/schedule/[slug]/page.tsx` was significantly enhanced. All new features are toggle-controlled via the `overrides` URL param (base64 JSON) — no widget version bump needed.
+
+### New State
+
+```typescript
+const [weekOffset, setWeekOffset] = useState(0);        // 0 = current week, 1–3 = future weeks
+const [activeCategory, setActiveCategory] = useState<string | null>(null); // category filter pill
+```
+
+### Week Navigation (P0)
+
+```typescript
+const MAX_WEEK_OFFSET = 3; // up to 4 weeks ahead
+
+function getWeekBounds(offset: number) {
+  const today = new Date();
+  const weekStart = new Date(today);
+  weekStart.setDate(today.getDate() - today.getDay() + offset * 7);
+  // weekEnd = weekStart + 6 days
+}
+```
+
+- `weekClasses` filters `classes[]` by `scheduled_date` within the computed week window
+- Day tabs (Sun–Sat) still control the day within the selected week
+- "Today" badge on the day tab only shows when `weekOffset === 0` (current week)
+- "Today" jump button appears in the week nav bar when `weekOffset > 0`
+- Data source: RPC already returns all future dates — filtering is client-side only, no extra network request
+
+### Category Filter Pills (P1)
+
+```typescript
+const categories = useMemo(() => {
+  const cats = [...new Set(weekClasses.map((c) => c.program_name).filter(Boolean))];
+  return (cats as string[]).sort();
+}, [weekClasses]);
+```
+
+- Pills auto-reset when switching weeks (`useEffect` on `weekOffset`)
+- Only rendered when `categories.length > 1` AND `show_category_filter !== false`
+- First pill is always "All" (clears `activeCategory`)
+- Works independently from the gym owner's `visible_programs` restriction (which is applied after)
+
+### New Override Flags (Admin Configurator)
+
+| Key | Default | Behavior |
+|---|---|---|
+| `show_category_filter` | `true` | Show/hide category pills |
+| `show_class_image` | `false` | Thumbnail (48×48) in collapsed card + full-width banner (max 160px) in expanded |
+| `show_instructor_photo` | `false` | 16px avatar in the card row next to instructor name |
+| `show_description_preview` | `false` | Truncated 1-line description preview in collapsed card |
+| `show_difficulty` | `false` | Difficulty pill badge inline in card row |
+
+> Image/photo flags default OFF — academies without photos would show broken images. Gym owner explicitly opts in.
+
+### Urgency & Sold-Out Logic (P1)
+
+```typescript
+const isSoldOut = cls.spots_available === 0 && cls.spots_total > 0;
+const isUrgent  = !isSoldOut && cls.spots_available > 0 && cls.spots_available <= 5;
+const isAlmostFull = spotsPercent >= 80 && !isSoldOut;
+```
+
+| State | UI |
+|---|---|
+| `isSoldOut` | Red "FULL" badge in card; CTA becomes "Join Waitlist" (gray) |
+| `isUrgent` | Amber "X left!" text + amber progress bar |
+| `isAlmostFull` | Red spots count + red progress bar |
+| Normal | Green spots count + green progress bar |
+
+### SQL Changes — `ADD_SCHEDULE_WIDGET_V2.sql`
+
+`get_public_schedule` now additionally returns:
+
+```sql
+cl.category                  AS category,        -- explicit (also returned as program_name)
+cl.featured_image_url        AS class_image_url  -- new: class photo/thumbnail
+```
+
+**Apply in Supabase Dashboard before enabling image toggles.** Widget degrades gracefully if `class_image_url` is null (no broken img tags — conditional render).
+
+### ClassItem Type Updates
+
+```typescript
+interface ClassItem {
+  // ... existing fields ...
+  scheduled_date: string;    // was already in SQL, now typed
+  category: string;          // new
+  class_image_url?: string;  // new — optional
+}
+```
+
+---
+
 ## 4. JS Loader Specification
 
 ### File: `public/widgets/loader.js`
@@ -652,7 +1111,9 @@ $$;
 
 Returns upcoming classes for future dates. **Storefront-aware:** JOINs `classes` table for name/description/visibility. Uses `class_schedules.status = 'scheduled'` + `classes.is_active = true` + `classes.show_on_website` filter. Falls back to all active classes if storefront not configured.
 
-**Returns:** `{ classes: [{ id, name, start_time, end_time, day_of_week, scheduled_date, spots_total, spots_taken, spots_available, instructor_name, instructor_photo, program_name, description, difficulty_level, duration_minutes, status }] }`
+**Returns:** `{ classes: [{ id, name, start_time, end_time, day_of_week, scheduled_date, spots_total, spots_taken, spots_available, instructor_name, instructor_photo, program_name, category, description, difficulty_level, duration_minutes, status, room_name, class_image_url }] }`
+
+> **V2 additions (ADD_SCHEDULE_WIDGET_V2.sql):** `class_image_url` (from `classes.featured_image_url`) and `category` (explicit field alongside `program_name`) are now included. Apply `ADD_SCHEDULE_WIDGET_V2.sql` in Supabase Dashboard to activate.
 
 > **Schema note:** `class_schedules` has NO `is_active` column — it uses `status` (text: 'scheduled', 'cancelled'). Class metadata (name, description, difficulty) comes from the `classes` table via `class_id` FK. Instructor photo uses `instructors.photo_url` (not `avatar_url`).
 
@@ -732,14 +1193,14 @@ Returns classes that are full and eligible for waitlist signup, with current wai
 
 **Data sources:** `class_schedules WHERE spots_taken >= max_capacity`, `class_waitlist` for current waitlist counts
 
-### AI Chat Widget — `/api/ai/public-chat` *(Sprint 4 — widget page)*
+### AI Chat Widget — `/api/ai/public-chat` *(Sprint 4 + Sprint 7 V2)*
 
 The AI Chat widget (`app/widgets/chat/[slug]/page.tsx`) calls the `/api/ai/public-chat` API route (not a Supabase RPC). This is an exception to the "no API routes" rule because:
 - OpenAI API key cannot be exposed to the browser
 - Rate limiting requires server-side IP checking
 - Gym context assembly is complex (classes + schedule + plans + instructors + FAQs)
 
-**Features:**
+**Features (Sprint 4):**
 - Cross-widget context reception: knows what the visitor viewed (class, plan, instructor) via postMessage bus
 - Proactive trigger messages: auto-opens with contextual message from loader.js (exit intent, time on page, return visitor, scroll depth, inactivity)
 - Quick action buttons: contextual shortcuts based on visitor navigation
@@ -747,8 +1208,39 @@ The AI Chat widget (`app/widgets/chat/[slug]/page.tsx`) calls the `/api/ai/publi
 - Escalation flag: when AI can't answer, marks `[ESCALATE]` for staff handoff
 - Typing indicator, conversation history (last 8 messages)
 
-**API Request:** `POST /api/ai/public-chat` → `{ gym_id, message, conversation_history, visitor_name?, visitor_email? }`
+**V2 Features (Sprint 7):**
+- **Agent Persona** — configurable name, avatar URL, custom greeting, specialty mode
+- **Specialty behaviors** — `lead_conversion` (trial-focused), `customer_service` (support-focused), `general` (balanced)
+- **Avatar upload** — Supabase Storage at `media/chat-agents/{gym_id}_{timestamp}.{ext}`. Preview in admin with remove button.
+- **Auto-language detection** — `navigator.language` in the browser → normalized to `en`/`pt-br`/`es`/`fr`/`de` → sent as `visitor_language` to API
+- **Language resolution logic:** if gym has a configured language (non-`en`) → use that. Otherwise use visitor's detected language. AI always responds in the detected language.
+- **`visitor_language` persisted** in `public_chat_sessions` (new column, indexed)
+- **Conversations Dashboard** at `/dashboard/settings/website-widgets/conversations` — stats strip, filter tabs, search, expandable session cards with full message+response, "Create Lead" one-click, "View Lead in Pipeline" link
+
+**API Request V2:** `POST /api/ai/public-chat` → `{ gym_id, message, conversation_history, visitor_name?, visitor_email?, agent_name?, agent_specialty?, visitor_language? }`  
 **API Response:** `{ content, needs_escalation, gym_name }`
+
+### Table: `public_chat_sessions` *(Sprint 4 + Sprint 7)*
+
+Logs each AI chat interaction initiated on external gym websites.
+
+| Column | Type | Description |
+|--------|------|-------------|
+| `id` | UUID | Primary key |
+| `gym_id` | UUID | FK → `studio_settings(gym_id)` |
+| `visitor_ip` | TEXT \| NULL | Client IP for rate limiting |
+| `visitor_name` | TEXT \| NULL | Name collected via inline lead capture |
+| `visitor_email` | TEXT \| NULL | Email collected via inline lead capture |
+| `message_count` | INT | Number of messages in session |
+| `last_message` | TEXT \| NULL | Last visitor message (max 200 chars) |
+| `ai_response` | TEXT \| NULL | Last AI response (max 500 chars) |
+| `needs_escalation` | BOOLEAN | AI flagged `[ESCALATE]` in response |
+| `lead_id` | UUID \| NULL | FK → `leads(id)` — set when lead is created from this session |
+| `visitor_language` | TEXT \| NULL | **(Sprint 7)** Detected browser language code (e.g. `en`, `pt-br`, `es`) |
+| `created_at` | TIMESTAMPTZ | Session timestamp |
+
+**Index (Sprint 7):** `idx_chat_sessions_language ON public_chat_sessions(gym_id, visitor_language)`  
+**SQL:** `ADD_CHAT_AGENT_V2.sql`
 
 ### Table: `widget_proactive_triggers` *(Sprint 3)*
 
@@ -1085,13 +1577,56 @@ interface PricingOverrides {
 
 ```typescript
 interface ChatOverrides {
-  can_suggest_trial: boolean;    // Allow trial booking suggestions
-  collect_email_required: boolean;
-  bubble_color: string;          // Override chat bubble color
+  // Sprint 4 — original fields
+  can_suggest_trial: boolean;          // Allow trial booking suggestions
+  collect_email_required: boolean;     // Force email collection
+  bubble_color: string;                // Override chat bubble color
   position: 'bottom-right' | 'bottom-left';
-  proactive_delay_seconds: number; // Seconds before proactive message (0 = disabled)
-  welcome_message_override: string;
+  proactive_delay_seconds: number;     // Seconds before proactive message (0 = disabled)
+  welcome_message_override: string;    // Legacy welcome message
+
+  // Sprint 7 — Agent Persona
+  agent_name: string;                  // Display name (default: gym name or 'AI Assistant')
+  agent_avatar_url: string;            // URL of agent avatar image (uploaded to Supabase Storage)
+  agent_greeting: string;              // Custom first message from the agent
+  agent_specialty: 'lead_conversion' | 'customer_service' | 'general';  // Behavior mode
+  show_proactive: boolean;             // Enable proactive trigger messages
+  show_lead_capture: boolean;          // Enable inline name/email capture
 }
+```
+
+**Agent Specialty behaviors:**
+
+| Specialty | AI behavior |
+|---|---|
+| `lead_conversion` | Actively suggests trials, asks for contact info, highlights offers |
+| `customer_service` | Answers questions, explains policies, escalates when unsure |
+| `general` | Balanced — helpful without hard sell |
+
+**Avatar upload flow (admin configurator):**
+```
+Admin selects file → uploadAgentAvatar(file)
+  → supabase.storage.from('media').upload('chat-agents/{gym_id}_{ts}.{ext}', file)
+  → .getPublicUrl() → sets widgetOverrides.chat.agent_avatar_url
+  → live preview updates immediately (debounced 600ms)
+```
+
+**Language detection flow (widget runtime):**
+```typescript
+// In app/widgets/chat/[slug]/page.tsx:
+const lang = navigator.language || '';
+if (lang.startsWith('pt')) setVisitorLanguage('pt-br');
+else if (lang.startsWith('es')) setVisitorLanguage('es');
+else if (lang.startsWith('fr')) setVisitorLanguage('fr');
+else if (lang.startsWith('de')) setVisitorLanguage('de');
+else setVisitorLanguage('en');
+
+// Sent with each message: { ..., visitor_language: 'pt-br' }
+
+// In /api/ai/public-chat:
+const gymLanguage = aiSettings?.language || 'en';
+const effectiveLanguage = (gymLanguage !== 'en') ? gymLanguage : (visitor_language || 'en');
+// System prompt: 'LANGUAGE: Respond in Brazilian Portuguese. Always match the visitor's language.'
 ```
 
 ### Lead Capture Widget Overrides

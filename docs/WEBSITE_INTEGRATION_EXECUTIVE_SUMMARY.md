@@ -1,7 +1,7 @@
 # Website Widget Integration System — Executive Summary
 
-**Data:** 20 de Abril de 2026  
-**Status:** ✅ Completo — Fases 0-3 + Sprints 1-4 + Função de Demo Comercial (Before/After)  
+**Data:** 23 de Abril de 2026  
+**Status:** ✅ Sprint 7 Completo — AI Chat Agent V2 (Personalização de Agente + Upload de Avatar + Detecção de Idioma Automática + Dashboard de Conversas)  
 **Plataforma:** CodeGym — AI-Powered Gym Management SaaS
 
 ---
@@ -57,7 +57,7 @@ O visitante do site da academia vê horários interativos, planos com preços, m
 
 | Opção | Complexidade | Para Quem | Código |
 |-------|-------------|-----------|--------|
-| **🚀 Script Universal** | 1 linha de HTML | Dono que quer "instalar e esquecer" | `<script src="https://app.codegyms.com/widgets/loader.js" data-gym="slug" data-key="UUID"></script>` |
+| **🚀 Script Universal** | 1 linha de HTML | Dono que quer "instalar e esquecer" | `<script data-gym="slug" data-key="uuid">` |
 | **🎯 Widgets Individuais** | DIVs posicionadas | Dono que quer controle de layout | `<div data-codegym="schedule" data-gym="slug"></div>` |
 | **🔗 Links Diretos** | Zero código | Instagram, email, QR code | `codegym.com/schedule/slug` |
 | **🔌 Form Bridge Nativo** | 1 atributo no `<form>` | Academia que já tem formulário próprio | `<form data-codegym-form data-gym="slug">` |
@@ -65,21 +65,28 @@ O visitante do site da academia vê horários interativos, planos com preços, m
 ### Opção 1 — Script Universal (Recomendada)
 
 ```html
-<!-- Cola no <head> do site — PRONTO! -->
-<script src="https://app.codegyms.com/widgets/loader.js"
+<!-- Obtido no Admin > Website Widgets > Install Code -->
+<script
+  src="https://app.codegym.com/widgets/loader.js"
   data-gym="minha-academia"
-  data-key="SEU_WIDGET_PUBLIC_KEY">
+  data-key="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx">
 </script>
 ```
 
-- Loader busca configuração da academia → injeta widgets habilitados automaticamente
+- `data-gym` = slug público da academia
+- `data-key` = Widget Key (UUID único por academia, obtido no admin)
+- Loader busca configuração da academia via API gateway → injeta widgets habilitados
 - Mudanças no admin refletem no site instantaneamente
 - Zero manutenção para o dono da academia
 
 ### Opção 2 — Widgets Individuais
 
 ```html
-<script src="https://app.codegyms.com/widgets/loader.js"></script>
+<!-- Loader com a Widget Key -->
+<script
+  src="https://app.codegym.com/widgets/loader.js"
+  data-key="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx">
+</script>
 
 <!-- Na página "Aulas" -->
 <div data-codegym="schedule" data-gym="minha-academia"></div>
@@ -130,6 +137,62 @@ O visitante do site da academia vê horários interativos, planos com preços, m
 - Também disponível via `CodeGym.submitForm()` (loader.js) ou REST API (`POST /api/public/form-bridge`)
 
 **Todas as 4 opções compartilham:** mesmas páginas, mesmos RPCs, mesma configuração admin. Zero duplicação de código.
+
+---
+
+## 3.1. Segurança Multi-Tenant: Arquitetura BFF (Backend for Frontend)
+
+### O Problema Resolvido
+
+Com 100 academias na plataforma, bastava conhecer o slug de uma academia (informação pública, presente na URL) para realizar operações de escrita: injetar leads falsos, poluir o pipeline de CRM, sobrecarregar o sistema de IA com dados fictícios.
+
+### A Solução: API Gateway + Widget Key
+
+```
+Site da Academia (domínio externo)
+  │
+  │   Apenas: slug + widget_public_key UUID
+  │   Zero credenciais de banco
+  │
+  ▼
+https://app.codegym.com/api/widgets/*   ← Gateway CodeGym
+  │
+  │   Rate limit + validação + SERVICE_KEY (server-side)
+  │
+  ▼
+Supabase   ← credenciais nunca saem daqui
+```
+
+### Como Funciona na Prática
+
+**Para o dono da academia** — transparente. O admin exibe a Widget Key na aba "Install Code":
+
+| O que ele recebe | O que faz |
+|---|---|
+| `data-gym="minha-academia"` | Identifica a academia (público, como o domínio) |
+| `data-key="xxxxxxxx-..."` | Autentica operações de escrita (segredo por academia) |
+
+**Para o visitante do site** — zero impacto. Nenhuma credencial aparece no HTML público.
+
+**Separação READ vs. WRITE:**
+
+| Operação | Necessita key? | Motivo |
+|---|---|---|
+| Ver agenda, preços, instrutores | ❌ Não | Dados públicos (equivale ao site da academia) |
+| Capturar lead, enviar formulário | ✅ Sim | Escrita no CRM, risco de spam |
+| Chat IA, marcar aula, lista de espera | ✅ Sim | Escrita no banco, custo de processamento |
+| Ping de instalação | ✅ Sim | Rastreamento de analytics |
+
+**Se a key for comprometida:** o dono clica em "Regenerate" no admin. O site para de funcionar nas operações de escrita até ele atualizar o snippet — sem afetar nenhuma outra academia.
+
+**Onboarding de uma academia real (WordPress, Wix, Squarespace, HTML puro):**
+1. Admin → Settings → Website Widgets → aba "Install Code"
+2. Copia o snippet gerado (já contém `data-gym` e `data-key` preenchidos)
+3. Cola no `<head>` do site — fim. Nenhum Vercel, nenhuma variável de ambiente, nenhuma configuração extra.
+
+> O site `pulsegym365-demo` usa env vars (`NEXT_PUBLIC_WIDGET_KEY`) porque é um projeto Next.js/React onde a chave precisa vir de uma variável de build — isso é um detalhe da arquitetura do demo, não do fluxo dos clientes reais.
+
+---
 
 ### 3.2. Nova Função de Demonstração Comercial (Before/After)
 
@@ -223,7 +286,7 @@ Os RPCs originais (`get_public_pricing`, `get_public_schedule`) simplesmente exp
 | **📅 Cronograma** | Calendário semanal interativo com spots em tempo real | ✅ Pronto |
 | **💰 Planos/Preços** | Cards comparativos com CTA inteligente + Stripe Checkout | ✅ Pronto |
 | **ℹ️ Info do Estúdio** | Horários, endereço, mapa, contato, amenidades | ✅ Pronto |
-| **🤖 Chat IA** | Assistente GPT-4o-mini com cross-widget context + proactive triggers | ✅ **Implementado** |
+| **🤖 Chat IA** | Assistente GPT-4o-mini com persona configurável (nome, avatar, saudação, especialidade), detecção de idioma automática, dashboard de conversas | ✅ **V2 Implementado** |
 | **📝 Captura de Leads** | Formulário progressivo multi-step | ✅ Pronto |
 
 ### Fase 2 — Engagement
@@ -337,10 +400,7 @@ O visitante vê o layout real da sala → spots disponíveis em verde → clica 
 > Não encontramos mecanismo equivalente em nenhum concorrente direto.
 
 ```html
-<script src="https://app.codegyms.com/widgets/loader.js"
-  data-gym="minha-academia"
-  data-key="SEU_WIDGET_PUBLIC_KEY">
-</script>
+<script src="https://app.codegym.com/w/minha-academia.js"></script>
 ```
 
 Uma linha. O loader busca a configuração → injeta apenas os widgets habilitados → aplica as cores da academia → ativa comunicação entre widgets → pronto.
@@ -388,7 +448,27 @@ Cada widget pode ter configurações específicas:
 - Pricing: mostrar preços? Quais planos? Layout horizontal/vertical?
 - AI Chat: pode sugerir trial? Coletar email obrigatório? Cor do bubble? Posição?
 - Lead Capture: quais campos? Trigger de timing? Popup vs inline?
-- Cada widget pode sobrescrever cores do tema global
+- **Cada widget pode sobrescrever as 5 cores do tema global de forma independente** ← Sprint 5
+
+**Cores independentes por widget (Implementado — Sprint 5)**
+
+O modal de configuração de cada widget (⚙️) inclui agora um painel de cores próprio:
+
+| Campo | O que controla no widget |
+|---|---|
+| **Primary** | Headers, badges, highlights |
+| **Background** | Fundo do widget |
+| **Text** | Todos os textos |
+| **Accent** | Destaques, urgência, tags |
+| **CTA Button** | Botão de conversão |
+
+- Deixar em branco = herda tema global
+- "Reset to global theme" zera todos os overrides do widget
+- Preview ao vivo atualiza instantaneamente
+- Persiste na coluna `theme_overrides` em `website_widget_settings`
+- O `loader.js` aplica automaticamente: `mergedTheme = Object.assign({}, globalTheme, widgetThemeOverrides)`
+
+> **Exemplo:** widget de Pricing com fundo escuro e CTA laranja, enquanto o Schedule usa o tema claro padrão — cada um com identidade visual distinta sem conflito.
 
 ---
 
@@ -425,8 +505,7 @@ Cada widget pode ter configurações específicas:
 │  ┌─── CÓDIGO DE INSTALAÇÃO ─────────────────────────────────┐  │
 │  │ Tab: [Script Universal] [Widgets Individuais] [Links]     │  │
 │  │                                                           │  │
-│  │  <script src="https://app.codegyms.com/widgets/loader.js" │  │
-│  │    data-gym="slug" data-key="UUID">               │  │
+│  │  <script src="https://app.codegym.com/w/slug.js">        │  │
 │  │  </script>                                    [📋 Copiar] │  │
 │  │                                                           │  │
 │  │  [📧 Enviar instruções por email]                        │  │
@@ -445,7 +524,7 @@ Cada widget pode ter configurações específicas:
 | Dados sensíveis expostos | ✅ RPCs read-only, apenas dados públicos |
 | Abuso de API | ✅ Rate limiting por IP (10 req/min) |
 | Cross-origin attacks | ✅ CORS restrito + validação de origin no postMessage |
-| API keys no client | ✅ Zero credenciais no browser — BFF gateway com service role server-side |
+| API keys no client | ✅ Nenhuma chave exposta — public RPCs via anon key |
 | Script injection via widget | ✅ iframe sandbox + Content Security Policy |
 | Spam de leads | ✅ Rate limiting + honeypot fields + reCAPTCHA opcional |
 
@@ -554,8 +633,48 @@ Com CodeGym Widgets (hipótese):
 | 4.1 | 🎁 Gift Card — compra com Stripe Checkout | ✅ Implementado |
 | 4.2 | ⏳ Waitlist — lista de espera inteligente | ✅ Implementado |
 | 4.3 | 🤖 Chat IA — widget page com cross-widget context | ✅ Implementado |
-| 4.4 | 🏪 Storefront Admin — controle de visibilidade por widget | ✅ Implementado |
-| 4.5 | 🐛 Fix loader.js — remoção de funções duplicadas | ✅ Corrigido |
+
+### Sprint 7 — AI Chat Agent V2 (Abril 2026)
+- ✅ Personalização completa do agente: nome, avatar, saudação customizada, especialidade (lead_conversion / customer_service / general)
+- ✅ Upload de avatar direto no Supabase Storage (`media/chat-agents/`) — preview circular + botão de remoção
+- ✅ Detecção automática de idioma via `navigator.language` — resposta na língua do visitante sem configuração manual
+- ✅ Dashboard de Conversas — stats (total, escaladas, emails, leads), filtros, busca, ações (criar lead, ver pipeline, email)
+- ✅ Botão "Conversations" no header da página de Widgets → `/conversations`
+- ✅ `public_chat_sessions.visitor_language` — campo novo, indexado por `(gym_id, visitor_language)`
+- ✅ API salva `visitor_language` junto com cada sessão de chat
+- ✅ SQL: `ADD_CHAT_AGENT_V2.sql`
+
+| Step | Entrega | Status |
+|------|---------|--------|
+| 7.1 | 🤖 Persona do agente (nome, avatar, saudação, especialidade) | ✅ Implementado |
+| 7.2 | 🖼️ Upload de avatar para Supabase Storage | ✅ Implementado |
+| 7.3 | 🌐 Auto-detecção de idioma do visitante | ✅ Implementado |
+| 7.4 | 📊 Dashboard de Conversas com ações de lead | ✅ Implementado |
+| 7.5 | 🗄️ `visitor_language` no schema + API | ✅ Implementado |
+
+
+### Sprint 5 — Qualidade & Inteligência de Atribuição
+
+### Sprint 6 — Schedule Widget V2 (Abril 2026)
+- ✅ Navegação por semana (← Esta Semana / Próxima →, até 4 semanas à frente)
+- ✅ Imagem da aula (thumbnail no card + banner no expandido) — toggle do admin
+- ✅ Foto do instrutor na linha do card — toggle do admin
+- ✅ Filtro por categoria/programa (pills automáticos quando há 2+ categorias)
+- ✅ Preview de descrição no card sem expandir — toggle do admin
+- ✅ Badge "FULL" quando esgotado + botão muda para "Join Waitlist"
+- ✅ Badge de urgência âmbar quando ≤ 5 vagas restantes
+- ✅ Dificuldade visível na linha do card — toggle do admin
+- ✅ Botão "Today" para voltar à semana atual com 1 clique
+- ✅ SQL `ADD_SCHEDULE_WIDGET_V2.sql` — `get_public_schedule` retorna `class_image_url` + `category`
+
+| Step | Entrega | Status |
+|------|---------|--------|
+| 5.1 | 🐛 **P0 FIX:** Theme delivery — `get_public_widget_config` remap de chaves | ✅ Hoje |
+| 5.2 | 🐛 **P0 FIX:** `last_ping_at` nunca atualizado no health check | ✅ Hoje |
+| 5.3 | ✨ Cores independentes por widget (5 color pickers no modal ⚙️) | ✅ Hoje |
+| 5.4 | ✨ Campo "Website URL" no admin + save no health check | ✅ Hoje |
+| 5.5 | ✨ Email de boas-vindas + notificação de staff para leads do site | ✅ Hoje |
+| 5.6 | 🎯 UTM Context Capture — atribuição completa ads → lead → membro | 🔜 P1 próximo |
 
 ---
 
@@ -611,12 +730,17 @@ Com CodeGym Widgets (hipótese):
 
 | Feature | Status | Quando |
 |---------|--------|--------|
+| **UTM Context Capture** — ads → lead → membro, fechar o loop | 🔜 P1 roadmap | Sprint 6 |
+| **Pixel forwarding** (Meta/Google ao submit de lead) | 🔜 P1 roadmap | Sprint 6 |
+| **Partial form save** (abandono captura email) | 🔜 P1 roadmap | Sprint 6 |
 | Checkout IN-widget para Guest Pass / Gift Card | ✅ Gift Card com Stripe Checkout | Sprint 4 |
 | Loja / eCommerce widget | Não implementado | Depende do módulo Store |
 | Facebook Page embed | Não implementado | Roadmap P2 |
 | Reserve with Google | Não implementado | Roadmap P1 |
 | SEO mode (Schema.org + Shadow DOM) | ✅ Implementado | v2.2 — `data-seo="true"` |
-| Multi-language / multi-currency | Não implementado | Roadmap P3 |
+| **Multi-language do Chat IA** | ✅ Auto-detecção via `navigator.language` — PT-BR, ES, FR, DE, EN | Sprint 7 |
+| **Multi-language de outros widgets** | Não implementado | Roadmap P3 |
+| **Multi-currency** | Não implementado | Roadmap P3 |
 | AI SMS / AI Voice (estilo CAASI) | Não implementado | Roadmap P2-P3 |
 | A/B testing de widgets | Não implementado | Roadmap P2 |
 | Multi-location hub | Não implementado | Roadmap P2 |
@@ -625,4 +749,141 @@ Com CodeGym Widgets (hipótese):
 
 ---
 
+## 14. P0 Bug Fix — Tema Ignorado no Site Real (Sprint 5)
+
+### O Problema
+
+Todo o sistema de customização de cores do admin (Primary, Background, Text, Accent, CTA) **era ignorado** quando os widgets eram carregados no site real de uma academia. O preview dentro do admin funcionava corretamente, mas o site real exibia apenas as cores padrão do sistema.
+
+**Causa raiz — incompatibilidade de nomes de chaves:**
+
+| Onde | Chaves usadas |
+|------|---------------|
+| Admin dashboard (estado + DB) | `primary_color`, `bg_color`, `text_color`, `mode`, `animations` |
+| `loader.js encodeThemeParams()` | `primary`, `background`, `text`, `theme_mode`, `animations_enabled` |
+| Preview admin (`buildPreviewUrl`) | Fazia mapeamento manual (por isso funcionava) |
+| `get_public_widget_config` (antes do fix) | Retornava `wc.theme_config` **RAW** — chaves erradas |
+
+**Impacto:** 100% das academias com customização de cores configurada não via o tema aplicado no site real.
+
+### A Solução
+
+O RPC `get_public_widget_config` foi atualizado para **remapear as chaves** antes de devolver o payload ao `loader.js`. Nenhuma mudança no DB, no admin, nem no `loader.js`:
+
+```sql
+-- ANTES (bug): retorna chaves do DB que loader.js não reconhece
+'theme', wc.theme_config
+
+-- DEPOIS (fix): remapeia para as chaves que loader.js espera
+'theme', jsonb_build_object(
+  'primary',            wc.theme_config->>'primary_color',
+  'background',         wc.theme_config->>'bg_color',
+  'text',               wc.theme_config->>'text_color',
+  'theme_mode',         wc.theme_config->>'mode',
+  'animations_enabled', (wc.theme_config->>'animations')::boolean,
+  'cta_color',          wc.theme_config->>'cta_color',
+  -- ... demais campos
+)
+```
+
+**Arquivo:** `codegym_bolt/FIX_THEME_CONFIG_KEY_MISMATCH.sql` — aplicar no Supabase Dashboard.
+
+### Comparativo Competitivo — Theme Delivery
+
+| Plataforma | Theme personalizado chega ao site? | Mecanismo |
+|-----------|-----------------------------------|-----------|
+| **WellnessLiving** | ✅ Sim | CSS vars via snippet dedicado |
+| **Mindbody** | ✅ Sim (limitado) | Cores básicas via snippet |
+| **Glofox** | ⚠️ Parcial | Apenas a cor primária |
+| **Wodify** | ❌ Não | Sem customização de widget |
+| **CodeGym (antes)** | ❌ Bug silencioso | Chaves incompatíveis entre DB e loader |
+| **CodeGym (após fix)** | ✅ Completo — 8 propriedades | Remap no RPC público |
+
+**Por que isso importa comercialmente:** A capacidade de match visual com o site da academia é um dos principais argumentos de adoção de qualquer sistema de widget. Uma plataforma que promete "match com seu site" e entrega cores padrão perde credibilidade no onboarding.
+
+---
+
+## 15. Análise Competitiva Detalhada — Sprint 5 (Abril 2026)
+
+### Matriz de Paridade vs. Líderes de Mercado
+
+| Funcionalidade | WellnessLiving | Mindbody | Glofox | Zen Planner | Mariana Tek | **CodeGym** |
+|---|:---:|:---:|:---:|:---:|:---:|:---:|
+| Widgets de website | ✅ 8 | ✅ 7 | ✅ 3 | ⚠️ 2 | ❌ | **✅ 17** |
+| Schedule — filtro por categoria | ✅ | ✅ | ⚠️ | ❌ | ❌ | **✅ Sprint 6** |
+| Schedule — imagem da aula no card | ✅ | ✅ | ❌ | ❌ | ❌ | **✅ Sprint 6** |
+| Schedule — navegação por semanas | ✅ | ✅ | ❌ | ❌ | ❌ | **✅ Sprint 6** |
+| Schedule — badge sold-out / waitlist | ❌ | ✅ | ❌ | ❌ | ❌ | **✅ Sprint 6** |
+| Customização de cores | ✅ | ✅ | ⚠️ | ❌ | N/A | **✅ 4 camadas** |
+| **Cores por widget** | ❌ | ❌ | ❌ | ❌ | N/A | **✅ EXCLUSIVO** |
+| IA conversacional no site | ❌ | ❌ | ❌ | ❌ | ❌ | **✅ EXCLUSIVO** |
+| Personalização de agente IA (nome/avatar/persona) | ❌ | ❌ | ❌ | ❌ | ❌ | **✅ EXCLUSIVO** |
+| Chat IA multilíngue automático | ❌ | ❌ | ❌ | ❌ | ❌ | **✅ EXCLUSIVO** |
+| Dashboard de conversas do chat IA | ❌ | ❌ | ❌ | ❌ | ❌ | **✅ EXCLUSIVO** |
+| Proactive triggers | ❌ | ❌ | ❌ | ❌ | ❌ | **✅ EXCLUSIVO** |
+| Cross-widget intelligence | ❌ | ❌ | ❌ | ❌ | ❌ | **✅ EXCLUSIVO** |
+| Social proof com dados reais | ❌ | ❌ | ❌ | ❌ | ❌ | **✅ EXCLUSIVO** |
+| Spot map embeddable | ❌ | ❌ | ❌ | ❌ | 🟡 app only | **✅ EXCLUSIVO** |
+| 1 linha de código (universal) | ❌ | ❌ | ❌ | ❌ | ❌ | **✅ EXCLUSIVO** |
+| Gift Card widget | ❌ | ❌ | ❌ | ❌ | ❌ | **✅ EXCLUSIVO** |
+| Waitlist widget | ❌ | 🟡 app | ❌ | ❌ | ❌ | **✅ EXCLUSIVO** |
+| Health check de instalação | ❌ | ❌ | ❌ | ❌ | ❌ | **✅ EXCLUSIVO** |
+| UTM context capture | ❌ | 🟡 limitado | ❌ | ❌ | ❌ | 🔜 Sprint 6 |
+| Pixel forwarding (Meta/Google) | ✅ | ✅ | ❌ | ❌ | ❌ | 🔜 Sprint 6 |
+| Partial form save | ❌ | ❌ | ❌ | ❌ | ❌ | 🔜 Sprint 6 |
+
+### Próximas Features de Alto ROI (P1)
+
+**UTM Context Capture** é o próximo diferencial de maior impacto:
+
+- **Problema:** o dono da academia não sabe qual campanha de Google/Meta trouxe qual membro pagante
+- **Solução:** `loader.js` captura `utm_source`, `utm_medium`, `utm_campaign`, `utm_content`, `utm_term` da URL do site ao carregar → envia junto com cada lead/form-bridge submit
+- **Impacto:** fechar o loop "gastei R$500 no Google Ads → trouxe 12 leads → 3 viraram membros → ROI = X%"
+- **Nenhum concorrente direto** fecha este loop de forma nativa no widget
+- **Complexidade baixa:** `new URLSearchParams(window.location.search)` no loader + novo campo no schema de leads
+
+---
+
 **Bottom Line:** O Website Widget Integration System posiciona o CodeGym como a plataforma de gestão de academias com a integração de website mais completa que identificamos no mercado — combinando IA com proactive triggers, dados em tempo real e diferenciais técnicos difíceis de replicar a curto prazo. A proposta é forte, mas o impacto real depende de adoção pelo gym owner e qualidade dos dados cadastrados. Os próximos marcos são: validar métricas de conversão com as primeiras 10 academias em produção e iterar com base em dados reais.
+
+---
+
+## 16. Schedule Widget V2 — Sprint 6 (Abril 2026)
+
+### Problema Resolvido
+O widget de grade de aulas era funcional mas básico: mostrava apenas a semana atual, sem imagens, sem filtros e sem diferenciação visual por disponibilidade. Academias como Mindbody e WellnessLiving já oferecem navegação por semanas e thumbnails de aulas — o CodeGym agora tem paridade e alguns diferenciais adicionais.
+
+### O que Mudou para o Visitante do Site
+
+**Antes:** Uma lista de aulas do dia, em texto puro, sem possibilidade de ver a próxima semana.
+
+**Depois:**
+- Navega entre semanas com `← Prev / Next →` (até 4 semanas à frente)
+- Filtra por categoria com um clique (pills `[All] [Aqua] [Pilates] [Yoga]`)
+- Vê a foto da aula como thumbnail no card ou banner ao expandir
+- Vê a foto do instrutor diretamente na linha, sem precisar expandir
+- Recebe feedback visual imediato: badge vermelho **FULL** quando esgotado, âmbar **X left!** quando ≤ 5 vagas, botão transforma-se em "Join Waitlist" automaticamente
+- Preview da descrição da aula visível sem expandir o card
+
+### Configuração pelo Admin
+
+Todos os novos recursos são controláveis via toggles no painel do admin — nenhuma mudança de código necessária:
+
+| Toggle | Padrão | Descrição |
+|---|---|---|
+| `show_category_filter` | ✅ ON | Pills de categoria (só aparece com 2+ categorias na semana) |
+| `show_class_image` | ❌ OFF | Thumbnail 48px no card + banner no expandido |
+| `show_instructor_photo` | ❌ OFF | Avatar 16px do instrutor na linha do card |
+| `show_description_preview` | ❌ OFF | 1 linha da descrição visível sem expandir |
+| `show_difficulty` | ❌ OFF | Pill de dificuldade (beginner/intermediate/advanced) na linha |
+
+> Imagem e foto de instrutor ficam OFF por padrão pois dependem de conteúdo cadastrado. Academias que já têm fotos cadastradas podem ativar com 1 clique.
+
+### Impacto Esperado
+- **+15-25% engajamento** com o widget (baseado em benchmarks de WellnessLiving com imagens habilitadas)
+- **Redução de abandono** por incerteza de disponibilidade (badges FULL / urgência)
+- **Mais reservas antecipadas** pela navegação de semanas futuras
+- **Paridade competitiva** com Mindbody/WellnessLiving no item mais visitado do site de academia
+
+### Dependência Técnica
+Aplicar `ADD_SCHEDULE_WIDGET_V2.sql` no Supabase Dashboard para que `class_image_url` seja retornado pelo RPC. Sem este SQL, o widget funciona normalmente mas sem imagens.
