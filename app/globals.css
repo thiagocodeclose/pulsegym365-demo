@@ -491,7 +491,7 @@ main {
     radial-gradient(ellipse 80% 55% at 72% 28%, rgba(245, 124, 0, 0.28) 0%, transparent 60%),
     radial-gradient(ellipse 50% 70% at 20% 85%, rgba(42, 109, 246, 0.10) 0%, transparent 55%),
     linear-gradient(160deg, rgba(10, 5, 0, 0.78) 0%, rgba(8, 8, 8, 0.65) 100%),
-    url('https://images.unsplash.com/photo-1540497077202-7c8a3999166f?w=1200&q=80&auto=format&fit=crop') center / cover no-repeat;
+    url('https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=1200&q=80&auto=format&fit=crop') center / cover no-repeat;
   border: 1px solid rgba(245, 124, 0, 0.22);
 }
 
