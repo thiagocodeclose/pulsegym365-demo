@@ -25,8 +25,40 @@ import {
   trainingStyles,
   trainers,
   transformations,
-  weeklySchedule
 } from '@/lib/site-data';
+
+function LiveBadge() {
+  return (
+    <span className="live-badge" aria-label="Live data connected">
+      <span className="live-dot" aria-hidden="true" />
+      Live
+    </span>
+  );
+}
+
+const scheduleWindows = [
+  {
+    label: 'Morning',
+    time: '5:30 – 9:00 AM',
+    classes: ['Strength Express', 'Reformer Pilates', 'Power Yoga', 'Aqua Conditioning'],
+  },
+  {
+    label: 'Midday',
+    time: '12:00 – 1:30 PM',
+    classes: ['Strength Floor Express', 'Aqua Conditioning'],
+  },
+  {
+    label: 'Evening',
+    time: '5:30 – 9:00 PM',
+    classes: ['Rhythm Ride', 'Boxing', 'Jiu Jitsu', 'Dance Cardio', 'Power Yoga'],
+  },
+];
+
+const scheduleHighlights = [
+  { day: 'Mon · Wed · Fri', time: '7:00 AM', name: 'Reformer Pilates', level: 'All Levels', duration: '50 min', capacity: 12 },
+  { day: 'Daily', time: '12:15 PM', name: 'Strength Floor Express', level: 'All Levels', duration: '30 min', capacity: 20 },
+  { day: 'Tue · Thu', time: '7:15 PM', name: 'Boxing Fundamentals', level: 'Beginner', duration: '60 min', capacity: 16 },
+];
 
 export default function HomePage() {
   const { mode, isPulse } = useSiteMode();
@@ -132,31 +164,30 @@ export default function HomePage() {
       <section className="section alt">
         <div className="container">
           <SectionHeading
-            eyebrow="Class catalog"
-            title={isPulse ? 'All classes — live from your system' : '60+ weekly classes across 8 training zones'}
-            description={isPulse ? 'Every class your gym offers with images, difficulty, duration, and booking — always current from your system.' : 'Early mornings, midday sessions, and late-night blocks — your schedule always has an option.'}
+            eyebrow={isPulse ? 'Class catalog' : 'Training schedule'}
+            title={isPulse ? 'All classes — live from your system' : 'Classes running every day of the week'}
+            description={isPulse ? 'Every class your gym offers with images, difficulty, duration, and booking — always current from your system.' : 'Morning workouts, midday express sessions, and evening training blocks — structured for every schedule and goal.'}
           />
+          {isPulse && <LiveBadge />}
           <WidgetZone widget="classes" active={isPulse} label="Live class catalog">
-            <WidgetZone widget="schedule" active={false} label="">
-              <div className="schedule-grid">
-                {weeklySchedule.map((day) => (
-                  <div key={day.day} className="schedule-day">
-                    <div className="schedule-day-header">{day.day}</div>
-                    <div className="schedule-day-slots">
-                      {day.slots.map((slot) => (
-                        <div key={slot.time} className={`schedule-slot accent-${slot.accent}`}>
-                          <time>{slot.time}</time>
-                          <span>{slot.name}</span>
-                        </div>
-                      ))}
-                    </div>
+            <div className="schedule-windows">
+              {scheduleWindows.map((w) => (
+                <div key={w.label} className="schedule-window-card">
+                  <div className="schedule-window-label">{w.label}</div>
+                  <div className="schedule-window-time">{w.time}</div>
+                  <div className="schedule-window-classes">
+                    {w.classes.map((c) => (
+                      <span key={c} className="schedule-window-chip">{c}</span>
+                    ))}
                   </div>
-                ))}
-              </div>
-            </WidgetZone>
+                </div>
+              ))}
+            </div>
           </WidgetZone>
           <div className="schedule-cta">
-            <Link href="/classes" className="button button-ghost">View full class catalog &rarr;</Link>
+            <Link href="/classes" className="button button-ghost">
+              {isPulse ? 'Browse live class catalog' : 'View full class schedule'} &rarr;
+            </Link>
           </div>
         </div>
       </section>
@@ -165,23 +196,23 @@ export default function HomePage() {
         <div className="container">
           <SectionHeading
             eyebrow="Class schedule"
-            title={isPulse ? 'Live schedule — updated in real time' : 'Weekly schedule highlights'}
-            description={isPulse ? 'Connected to your CodeGym system. Classes, times, and availability update automatically.' : 'A snapshot of what a typical week looks like at PulseGym.'}
+            title={isPulse ? 'Live schedule — updated in real time' : 'Popular sessions this week'}
+            description={isPulse ? 'Connected to your CodeGym system. Classes, times, and availability update automatically.' : 'A look at some of the most popular recurring sessions at PulseGym.'}
           />
+          {isPulse && <LiveBadge />}
           <WidgetZone widget="schedule" active={isPulse} label="Live class schedule">
-            <div className="schedule-grid">
-              {weeklySchedule.map((day) => (
-                <div key={day.day} className="schedule-day">
-                  <div className="schedule-day-header">{day.day}</div>
-                  <div className="schedule-day-slots">
-                    {day.slots.map((slot) => (
-                      <div key={slot.time} className={`schedule-slot accent-${slot.accent}`}>
-                        <time>{slot.time}</time>
-                        <span>{slot.name}</span>
-                      </div>
-                    ))}
+            <div className="schedule-highlights">
+              {scheduleHighlights.map((s) => (
+                <article key={s.name} className="schedule-highlight-card">
+                  <div className="schedule-highlight-day">{s.day}</div>
+                  <div className="schedule-highlight-time">{s.time}</div>
+                  <div className="schedule-highlight-name">{s.name}</div>
+                  <div className="schedule-highlight-meta">
+                    <span className="schedule-highlight-chip">{s.level}</span>
+                    <span className="schedule-highlight-chip">{s.duration}</span>
+                    <span className="schedule-highlight-chip">{s.capacity} spots</span>
                   </div>
-                </div>
+                </article>
               ))}
             </div>
           </WidgetZone>

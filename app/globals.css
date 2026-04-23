@@ -150,6 +150,177 @@ main {
   border-color: rgba(255, 143, 31, 0.4);
 }
 
+/* ── Nav mode toggle (inline in header) ─────────────────── */
+
+.nav-mode {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.site-mode-inline {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  border-radius: 999px;
+  padding: 0.22rem;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.mode-chip-sm {
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--soft);
+  border-radius: 999px;
+  padding: 0.28rem 0.72rem;
+  font-size: 0.76rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.mode-chip-sm.active {
+  color: #181818;
+  background: linear-gradient(135deg, var(--orange), var(--orange-hover));
+}
+
+/* ── Live badge ──────────────────────────────────────────── */
+
+.live-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.38rem;
+  border-radius: 999px;
+  padding: 0.28rem 0.65rem;
+  font-size: 0.74rem;
+  font-weight: 700;
+  background: rgba(44, 207, 114, 0.1);
+  border: 1px solid rgba(44, 207, 114, 0.28);
+  color: #2CCF72;
+  margin-bottom: 1.1rem;
+}
+
+.live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #2CCF72;
+  animation: live-pulse 2s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+@keyframes live-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.45; transform: scale(0.65); }
+}
+
+/* ── Schedule windows (Standard mode) ───────────────────── */
+
+.schedule-windows {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.schedule-window-card {
+  border-radius: 18px;
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+  padding: 1.4rem;
+}
+
+.schedule-window-label {
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--soft);
+  margin-bottom: 0.2rem;
+}
+
+.schedule-window-time {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 1rem;
+}
+
+.schedule-window-classes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.schedule-window-chip {
+  border-radius: 999px;
+  padding: 0.3rem 0.65rem;
+  font-size: 0.76rem;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--soft);
+}
+
+/* ── Schedule highlights (Standard mode) ────────────────── */
+
+.schedule-highlights {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.schedule-highlight-card {
+  border-radius: 18px;
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+  padding: 1.4rem;
+}
+
+.schedule-highlight-day {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--soft);
+  margin-bottom: 0.2rem;
+}
+
+.schedule-highlight-time {
+  font-size: 1.9rem;
+  font-weight: 900;
+  color: var(--text);
+  font-family: var(--font-headings);
+  letter-spacing: 0.02em;
+  margin-bottom: 0.5rem;
+}
+
+.schedule-highlight-name {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 0.65rem;
+}
+
+.schedule-highlight-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.schedule-highlight-chip {
+  border-radius: 999px;
+  padding: 0.28rem 0.62rem;
+  font-size: 0.75rem;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--soft);
+}
+
 .button {
   display: inline-flex;
   align-items: center;
@@ -1023,13 +1194,31 @@ textarea::placeholder {
     padding: 0.7rem 0;
   }
 
+  .nav-actions {
+    order: 1;
+  }
+
   .nav-links {
+    order: 2;
     width: 100%;
     justify-content: flex-start;
   }
 
   .site-mode-wrap {
     top: 136px;
+  }
+
+  .nav-mode {
+    order: 3;
+    width: 100%;
+    padding: 0.35rem 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    margin-top: 0.1rem;
+  }
+
+  .schedule-windows,
+  .schedule-highlights {
+    grid-template-columns: 1fr;
   }
 }
 
