@@ -2,7 +2,7 @@ export type SiteMode = 'standard' | 'pulse';
 
 // CodeGym integration constants — update here when going to production
 export const codegym = {
-  baseUrl: process.env.NEXT_PUBLIC_CODEGYM_URL || 'https://app.codegym.com',
+  baseUrl: process.env.NEXT_PUBLIC_CODEGYM_URL || 'https://app.codegyms.com',
   gymSlug: process.env.NEXT_PUBLIC_GYM_SLUG || 'pulsegym',
   widgetKey: process.env.NEXT_PUBLIC_WIDGET_KEY || ''
 };
