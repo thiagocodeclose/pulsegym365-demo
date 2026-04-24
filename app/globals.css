@@ -1763,3 +1763,164 @@ textarea::placeholder {
   .promo-banner-inner { gap: 0.4rem; }
   .partners-bar .promo-banner-inner { gap: 0.5rem; }
 }
+
+/* ── 4-step trial form ─────────────────────────────────────────── */
+
+.trial-progress {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.4rem;
+}
+
+.trial-step-bar {
+  height: 4px;
+  flex: 0 0 18px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.13);
+  transition: flex 0.35s ease, background 0.35s ease;
+}
+
+.trial-step-bar.active {
+  flex: 1 1 auto;
+  background: var(--orange, #f57c00);
+}
+
+.trial-step-count {
+  font-size: 0.78rem;
+  color: #737373;
+  white-space: nowrap;
+}
+
+.trial-step-title {
+  margin-bottom: 0.25rem;
+}
+
+.trial-step-subtitle {
+  color: #919191;
+  margin-bottom: 1.2rem;
+  font-size: 0.9rem;
+}
+
+.trial-class-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  max-height: 300px;
+  overflow-y: auto;
+  padding-right: 2px;
+  margin-bottom: 1rem;
+}
+
+.trial-class-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.18rem;
+  padding: 0.75rem 1rem;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.03);
+  cursor: pointer;
+  text-align: left;
+  color: #fff;
+  transition: border-color 0.18s, background 0.18s;
+  width: 100%;
+}
+
+.trial-class-card.selected {
+  border-color: var(--orange, #f57c00);
+  background: rgba(245, 124, 0, 0.11);
+}
+
+.trial-class-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.trial-class-name {
+  font-weight: 700;
+  font-size: 0.93rem;
+}
+
+.trial-class-spots {
+  font-size: 0.72rem;
+  color: #ffc68f;
+  background: rgba(245, 124, 0, 0.18);
+  border-radius: 6px;
+  padding: 2px 7px;
+}
+
+.trial-class-time {
+  font-size: 0.82rem;
+  color: #a0a0a0;
+}
+
+.trial-class-instructor {
+  font-size: 0.78rem;
+  color: #686868;
+}
+
+.trial-step-nav {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+}
+
+.trial-loading-msg {
+  color: #737373;
+  text-align: center;
+  padding: 2rem 0;
+  font-size: 0.9rem;
+}
+
+.trial-no-classes {
+  color: #737373;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.trial-divider {
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  padding-top: 0.9rem;
+  margin-top: 0.2rem;
+}
+
+.trial-friend-label {
+  color: #ffd5ae;
+  margin-bottom: 0.2rem;
+}
+
+.trial-friend-label span {
+  font-weight: 400;
+  color: #737373;
+}
+
+.trial-class-summary {
+  background: rgba(245, 124, 0, 0.08);
+  border: 1px solid rgba(245, 124, 0, 0.2);
+  border-radius: 12px;
+  padding: 0.7rem 0.9rem;
+}
+
+.trial-class-summary span {
+  font-size: 0.85rem;
+  color: #ffc68f;
+}
+
+.trial-result {
+  margin-top: 0;
+}
+
+.trial-result-note {
+  margin-top: 0.8rem;
+}
+
+.trial-btn-full {
+  width: 100%;
+}
+
+.success-box.trial-result {
+  margin-top: 0;
+}
+
