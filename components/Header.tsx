@@ -54,11 +54,10 @@ export function Header() {
               Member Portal
             </a>
           )}
+          <SiteModeToggle />
           <Link href="/free-trial" className="button button-primary">
             Start Free Trial
           </Link>
-          <span className="nav-sep" aria-hidden="true" />
-          <SiteModeToggle />
         </div>
       </div>
     </header>
