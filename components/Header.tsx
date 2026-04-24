@@ -54,10 +54,14 @@ export function Header() {
               Member Portal
             </a>
           )}
-          <SiteModeToggle />
           <Link href="/free-trial" className="button button-primary">
             Start Free Trial
           </Link>
+        </div>
+      </div>
+      <div className="header-mode-row">
+        <div className="container">
+          <SiteModeToggle />
         </div>
       </div>
     </header>
