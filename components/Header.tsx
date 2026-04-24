@@ -34,7 +34,6 @@ export function Header() {
         </nav>
 
         <div className="nav-actions">
-          <SiteModeToggle />
           {isPulse && codegym.ecommerceUrl && (
             <a
               href={codegym.ecommerceUrl}
@@ -58,6 +57,7 @@ export function Header() {
           <Link href="/free-trial" className="button button-primary">
             Start Free Trial
           </Link>
+          <SiteModeToggle />
         </div>
       </div>
     </header>
