@@ -4,7 +4,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { site, codegym } from '@/lib/site-data';
 import { useSiteMode } from './SiteModeProvider';
-import { SiteModeToggle } from './SiteModeToggle';
 
 const nav = [
   { href: '/', label: 'Home' },
@@ -32,10 +31,6 @@ export function Header() {
             </Link>
           ))}
         </nav>
-
-        <div className="nav-mode">
-          <SiteModeToggle />
-        </div>
 
         <div className="nav-actions">
           {isPulse && codegym.ecommerceUrl && (

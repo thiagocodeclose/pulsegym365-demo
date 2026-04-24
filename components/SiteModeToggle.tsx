@@ -6,20 +6,20 @@ export function SiteModeToggle() {
   const { mode, setMode } = useSiteMode();
 
   return (
-    <div className="site-mode-inline" role="group" aria-label="Switch website mode">
+    <div className="site-mode-corner" role="group" aria-label="Switch website mode">
       <button
         type="button"
-        className={`mode-chip-sm ${mode === 'standard' ? 'active' : ''}`}
+        className={`mode-chip-corner ${mode === 'standard' ? 'active' : ''}`}
         onClick={() => setMode('standard')}
       >
         Standard
       </button>
       <button
         type="button"
-        className={`mode-chip-sm ${mode === 'pulse' ? 'active' : ''}`}
+        className={`mode-chip-corner ${mode === 'pulse' ? 'active' : ''}`}
         onClick={() => setMode('pulse')}
       >
-        ⚡ Pulse
+        ⚡ Powered by Koriva
       </button>
     </div>
   );

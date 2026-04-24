@@ -4,6 +4,7 @@ import './globals.css';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { SiteModeProvider } from '@/components/SiteModeProvider';
+import { SiteModeToggle } from '@/components/SiteModeToggle';
 import { PromoBanner } from '@/components/PromoBanner';
 import { GlobalWidgets } from '@/components/GlobalWidgets';
 import { site } from '@/lib/site-data';
@@ -35,6 +36,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <main>{children}</main>
           <Footer />
           <GlobalWidgets />
+          <SiteModeToggle />
         </SiteModeProvider>
       </body>
     </html>
