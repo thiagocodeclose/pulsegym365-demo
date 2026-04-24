@@ -154,7 +154,10 @@ export default function HomePage() {
             <div className="training-grid">
               {trainingStyles.map((style) => (
                 <article key={style.name} className={`training-style-card accent-${style.accent}`}>
-                  <div className="training-style-visual" />
+                  <div
+                    className="training-style-visual"
+                    style={{ background: `${style.fallback}, url('${style.image}') center/cover no-repeat` }}
+                  />
                   <div className="training-style-body">
                     <h3>{style.name}</h3>
                     <p>{style.category}</p>

@@ -50,58 +50,58 @@ export const trainingStyles: TrainingStyle[] = [
   {
     name: 'Pilates',
     category: 'Core and Mobility',
-    image: '/images/styles/pilates.jpg',
+    image: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=600&q=80&auto=format&fit=crop',
     accent: 'orange',
-    fallback: 'linear-gradient(135deg, rgba(245,124,0,0.78), rgba(43,19,0,0.78))'
+    fallback: 'linear-gradient(135deg, rgba(245,124,0,0.55), rgba(43,19,0,0.72))'
   },
   {
     name: 'Yoga',
     category: 'Mind and Body',
-    image: '/images/styles/yoga.jpg',
+    image: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=600&q=80&auto=format&fit=crop',
     accent: 'gold',
-    fallback: 'linear-gradient(135deg, rgba(244,184,68,0.74), rgba(74,38,0,0.82))'
+    fallback: 'linear-gradient(135deg, rgba(244,184,68,0.50), rgba(74,38,0,0.72))'
   },
   {
     name: 'Swimming',
     category: 'Aquatics',
-    image: '/images/styles/swimming.jpg',
+    image: 'https://images.unsplash.com/photo-1530549387789-4c1017266635?w=600&q=80&auto=format&fit=crop',
     accent: 'teal',
-    fallback: 'linear-gradient(135deg, rgba(15,183,167,0.7), rgba(1,44,54,0.86))'
+    fallback: 'linear-gradient(135deg, rgba(15,183,167,0.45), rgba(1,44,54,0.72))'
   },
   {
     name: 'Boxing',
     category: 'Combat Sports',
-    image: '/images/styles/boxing.jpg',
+    image: 'https://images.unsplash.com/photo-1549719386-74dfcbf7dbed?w=600&q=80&auto=format&fit=crop',
     accent: 'red',
-    fallback: 'linear-gradient(135deg, rgba(235,87,87,0.72), rgba(66,10,10,0.86))'
+    fallback: 'linear-gradient(135deg, rgba(235,87,87,0.50), rgba(66,10,10,0.72))'
   },
   {
     name: 'Jiu Jitsu',
     category: 'Grappling',
-    image: '/images/styles/jiu-jitsu.jpg',
+    image: 'https://images.unsplash.com/photo-1555597673-b21d5c935865?w=600&q=80&auto=format&fit=crop',
     accent: 'purple',
-    fallback: 'linear-gradient(135deg, rgba(142,103,255,0.72), rgba(24,14,53,0.88))'
+    fallback: 'linear-gradient(135deg, rgba(142,103,255,0.50), rgba(24,14,53,0.72))'
   },
   {
     name: 'Dance',
     category: 'Cardio and Rhythm',
-    image: '/images/styles/dance.jpg',
+    image: 'https://images.unsplash.com/photo-1547153760-18fc86324498?w=600&q=80&auto=format&fit=crop',
     accent: 'pink',
-    fallback: 'linear-gradient(135deg, rgba(255,95,175,0.72), rgba(73,9,40,0.86))'
+    fallback: 'linear-gradient(135deg, rgba(255,95,175,0.50), rgba(73,9,40,0.72))'
   },
   {
     name: 'Spinning',
     category: 'Cycling Studio',
-    image: '/images/styles/spinning.jpg',
+    image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80&auto=format&fit=crop',
     accent: 'blue',
-    fallback: 'linear-gradient(135deg, rgba(42,109,246,0.74), rgba(9,21,56,0.88))'
+    fallback: 'linear-gradient(135deg, rgba(42,109,246,0.50), rgba(9,21,56,0.72))'
   },
   {
     name: 'Strength Training',
     category: 'Gym Floor',
-    image: '/images/styles/strength.jpg',
+    image: 'https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?w=600&q=80&auto=format&fit=crop',
     accent: 'green',
-    fallback: 'linear-gradient(135deg, rgba(44,207,114,0.74), rgba(10,45,26,0.88))'
+    fallback: 'linear-gradient(135deg, rgba(44,207,114,0.45), rgba(10,45,26,0.72))'
   }
 ];
 
