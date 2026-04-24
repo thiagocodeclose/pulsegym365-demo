@@ -43,9 +43,13 @@ export default function ContactPage() {
               </>
             </WidgetZone>
           </div>
-          <ContactForm />
+          {/* In Pulse mode: live lead capture widget handles form submission + automation */}
+          <WidgetZone widget="lead_capture" active={isPulse} label="Smart lead capture">
+            <ContactForm />
+          </WidgetZone>
         </div>
       </section>
     </>
   );
 }
+
