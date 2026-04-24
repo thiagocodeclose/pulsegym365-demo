@@ -24,7 +24,8 @@ type WidgetType =
   | 'classes'
   | 'programs'
   | 'promo_banners'
-  | 'hero';
+  | 'hero'
+  | 'member_portal';
 
 interface WidgetZoneProps {
   widget: WidgetType;
