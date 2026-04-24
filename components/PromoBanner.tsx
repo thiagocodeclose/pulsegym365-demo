@@ -1,13 +1,18 @@
-import Link from 'next/link';
+'use client';
+
+import { useSiteMode } from './SiteModeProvider';
+import { WidgetZone } from './WidgetZone';
 
 export function PromoBanner() {
+  const { isPulse } = useSiteMode();
+
+  if (!isPulse) return null;
+
   return (
-    <div className="promo-banner" role="banner" aria-label="Promotional offer">
-      <div className="container promo-banner-inner">
-        <span className="promo-tag">April Special</span>
-        <p>First month free with any annual plan — limited spots available.</p>
-        <Link href="/free-trial" className="promo-link">Claim offer &rarr;</Link>
-      </div>
-    </div>
+    <WidgetZone widget="announcement_bar" active={true} label="Announcement bar">
+      {/* No fallback — in Standard mode nothing renders */}
+      <span />
+    </WidgetZone>
   );
 }
+

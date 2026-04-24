@@ -18,9 +18,6 @@ export function Header() {
   const { mode } = useSiteMode();
   const isPulse = mode === 'pulse';
 
-  const portalUrl = codegym.memberPortalUrl || '/portal';
-  const isExternalPortal = !!codegym.memberPortalUrl;
-
   return (
     <header className="site-header">
       <div className="container nav-shell">
@@ -51,17 +48,9 @@ export function Header() {
               Shop
             </a>
           )}
-          {isPulse && (
-            <a
-              href={portalUrl}
-              className="button button-ghost"
-              {...(isExternalPortal
-                ? { target: '_blank', rel: 'noopener noreferrer' }
-                : {})}
-            >
-              Member Login
-            </a>
-          )}
+          <Link href="/portal" className="button button-ghost">
+            Member Portal
+          </Link>
           <Link href="/free-trial" className="button button-primary">
             Start Free Trial
           </Link>
