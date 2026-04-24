@@ -48,14 +48,16 @@ export function Header() {
               Shop
             </a>
           )}
-          <a
-            href={codegym.memberPortalUrl || `${codegym.baseUrl}/portal/${codegym.gymSlug}`}
-            className="button button-ghost"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Member Portal
-          </a>
+          {isPulse && (
+            <a
+              href={codegym.memberPortalUrl || `${codegym.baseUrl}/portal/${codegym.gymSlug}`}
+              className="button button-ghost"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Member Portal
+            </a>
+          )}
           <Link href="/free-trial" className="button button-primary">
             Start Free Trial
           </Link>
