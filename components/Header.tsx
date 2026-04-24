@@ -57,6 +57,7 @@ export function Header() {
           <Link href="/free-trial" className="button button-primary">
             Start Free Trial
           </Link>
+          <span className="nav-sep" aria-hidden="true" />
           <SiteModeToggle />
         </div>
       </div>
