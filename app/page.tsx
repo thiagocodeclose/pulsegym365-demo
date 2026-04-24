@@ -187,37 +187,6 @@ export default function HomePage() {
         </div>
       </ModeAwareSection>
 
-      <section className="section alt">
-        <div className="container">
-          <SectionHeading
-            eyebrow={isPulse ? 'Class catalog' : 'Training schedule'}
-            title={isPulse ? 'All classes — live from your system' : 'Classes running every day of the week'}
-            description={isPulse ? 'Every class your gym offers with images, difficulty, duration, and booking — always current from your system.' : 'Morning workouts, midday express sessions, and evening training blocks — structured for every schedule and goal.'}
-          />
-          {isPulse && <LiveBadge />}
-          <WidgetZone widget="classes" active={isPulse} label="Live class catalog">
-            <div className="schedule-windows">
-              {scheduleWindows.map((w) => (
-                <div key={w.label} className="schedule-window-card">
-                  <div className="schedule-window-label">{w.label}</div>
-                  <div className="schedule-window-time">{w.time}</div>
-                  <div className="schedule-window-classes">
-                    {w.classes.map((c) => (
-                      <span key={c} className="schedule-window-chip">{c}</span>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </WidgetZone>
-          <div className="schedule-cta">
-            <Link href="/classes" className="button button-ghost">
-              {isPulse ? 'Browse live class catalog' : 'View full class schedule'} &rarr;
-            </Link>
-          </div>
-        </div>
-      </section>
-
       <section className="section">
         <div className="container">
           <SectionHeading
