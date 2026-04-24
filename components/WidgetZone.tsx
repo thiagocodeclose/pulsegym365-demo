@@ -107,12 +107,15 @@ export function WidgetZone({ widget, active, children, label }: WidgetZoneProps)
   if (!active) return <>{children}</>;
 
   return (
-    <div className={`widget-zone widget-zone--${widget}`}>
+    <div
+      className={`widget-zone widget-zone--${widget}`}
+      style={height ? { height: `${height}px`, minHeight: 0 } : undefined}
+    >
       <iframe
         ref={iframeRef}
         src={src}
         className={`widget-iframe widget-iframe--${widget}`}
-        style={height ? { height: `${height}px`, minHeight: 0 } : undefined}
+        style={{ width: '100%', height: '100%', border: 'none', display: 'block' }}
         sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
         allow="clipboard-write"
         loading="lazy"
