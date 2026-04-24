@@ -1,11 +1,20 @@
 'use client';
 
+import { useEffect } from 'react';
 import Script from 'next/script';
 import { useSiteMode } from './SiteModeProvider';
 import { codegym } from '@/lib/site-data';
 
 export function GlobalWidgets() {
   const { isPulse } = useSiteMode();
+
+  // When switching back to Standard, remove all floating widget containers
+  // injected by loader.js (chat, social_proof) that persist in the DOM.
+  useEffect(() => {
+    if (!isPulse) {
+      document.querySelectorAll('[data-cg-widget]').forEach((el) => el.remove());
+    }
+  }, [isPulse]);
 
   if (!isPulse) return null;
 
@@ -23,4 +32,5 @@ export function GlobalWidgets() {
     />
   );
 }
+
 
