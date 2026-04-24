@@ -1355,6 +1355,16 @@ textarea::placeholder {
   border-radius: 0;
 }
 
+.widget-zone--announcement_bar {
+  min-height: 44px;
+}
+
+.widget-iframe--announcement_bar {
+  min-height: 44px;
+  border-radius: 0;
+  background: transparent;
+}
+
 .widget-zone--hero {
   min-height: 540px;
   border-radius: 24px;
