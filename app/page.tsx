@@ -262,20 +262,23 @@ export default function HomePage() {
         </div>
       </ModeAwareSection>
 
-      <section className="section">
+      <ModeAwareSection mode={mode} className="section">
         <div className="container">
           <SectionHeading
             eyebrow="Coaches"
-            title="Certified coaches across every zone"
-            description="PulseGym combines premium facility standards with people-first coaching that members trust."
+            title={isPulse ? 'Live coach profiles from your system' : 'Certified coaches across every zone'}
+            description={isPulse ? 'Coach bios, specialties, and availability — connected directly from your CodeGym system.' : 'PulseGym combines premium facility standards with people-first coaching that members trust.'}
           />
-          <div className="trainers-grid">
-            {trainers.map((trainer) => (
-              <TrainerCard key={trainer.name} trainer={trainer} />
-            ))}
-          </div>
+          {isPulse && <LiveBadge />}
+          <WidgetZone widget="instructors" active={isPulse} label="Live coach profiles">
+            <div className="trainers-grid">
+              {trainers.map((trainer) => (
+                <TrainerCard key={trainer.name} trainer={trainer} />
+              ))}
+            </div>
+          </WidgetZone>
         </div>
-      </section>
+      </ModeAwareSection>
 
       <section className="section alt">
         <div className="container">
@@ -371,6 +374,34 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      <ModeAwareSection mode={mode} className="section">
+        <div className="container">
+          <SectionHeading
+            eyebrow="Start today"
+            title={isPulse ? 'Ready to start? Claim your free trial.' : 'Take the first step toward your best self.'}
+            description={isPulse ? 'Drop your details and our team will reach out within minutes — and your trial slot gets reserved.' : 'Start with a no-pressure free trial and find your rhythm at PulseGym.'}
+          />
+          {isPulse && <LiveBadge />}
+          {/* Pulse: live lead capture widget handles form + automation pipeline */}
+          {/* Standard: a clear CTA panel pointing to the free-trial and contact pages */}
+          <WidgetZone widget="lead_capture" active={isPulse} label="Smart lead capture">
+            <div className="cta-banner mt-section-sm">
+              <div>
+                <span className="eyebrow">No commitment required</span>
+                <h2>Book your first session free.</h2>
+                <p>
+                  Tell us your goals and preferred schedule on the free-trial page. Our team will match you with the right coach and class within 24 hours.
+                </p>
+              </div>
+              <div className="hero-actions">
+                <Link href="/free-trial" className="button button-primary">Start Free Trial</Link>
+                <Link href="/contact" className="button button-ghost">Talk to the team</Link>
+              </div>
+            </div>
+          </WidgetZone>
+        </div>
+      </ModeAwareSection>
 
       <section className="section alt">
         <div className="container">
