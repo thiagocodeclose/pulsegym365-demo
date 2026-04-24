@@ -77,7 +77,7 @@ export function WidgetZone({ widget, active, children, label }: WidgetZoneProps)
           const ov = wc.widget_overrides || wc.overrides || {};
           if (Object.keys(ov).length > 0) {
             try {
-              params.set('overrides', encodeURIComponent(btoa(JSON.stringify(ov))));
+              params.set('overrides', btoa(encodeURIComponent(JSON.stringify(ov))));
             } catch (_) {}
           }
         }
