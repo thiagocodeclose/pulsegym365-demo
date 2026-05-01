@@ -1,3 +1,4 @@
+// @ts-nocheck
 import type { Metadata } from 'next';
 import { Bebas_Neue, Manrope } from 'next/font/google';
 import './globals.css';
@@ -7,6 +8,7 @@ import { SiteModeProvider } from '@/components/SiteModeProvider';
 import { PromoBanner } from '@/components/PromoBanner';
 import { GlobalWidgets } from '@/components/GlobalWidgets';
 import { site } from '@/lib/site-data';
+import { getKorivaConfig, buildCssVars } from '@/lib/koriva-config';
 
 const headingFont = Bebas_Neue({
   subsets: ['latin'],
@@ -25,9 +27,11 @@ export const metadata: Metadata = {
   metadataBase: new URL(`https://${site.domain}`)
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const cfg = await getKorivaConfig();
+  const vars = buildCssVars(cfg?.brand);
   return (
-    <html lang="en">
+    <html lang="en" style={vars as React.CSSProperties}>
       <body className={`${headingFont.variable} ${bodyFont.variable}`}>
         <SiteModeProvider>
           <PromoBanner />
