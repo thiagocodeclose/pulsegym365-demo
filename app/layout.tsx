@@ -10,6 +10,7 @@ import { GlobalWidgets } from '@/components/GlobalWidgets';
 import { site } from '@/lib/site-data';
 import { getKorivaConfig, buildCssVars } from '@/lib/koriva-config';
 
+import { KorivaLivePreview } from '@/components/KorivaLivePreview';
 const headingFont = Bebas_Neue({
   subsets: ['latin'],
   weight: '400',
@@ -33,6 +34,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="en" style={vars as React.CSSProperties}>
       <body className={`${headingFont.variable} ${bodyFont.variable}`}>
+        <KorivaLivePreview />
         <SiteModeProvider>
           <PromoBanner />
           <Header />
