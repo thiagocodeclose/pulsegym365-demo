@@ -518,6 +518,10 @@ export function KorivaLivePreview() {
         { type: "KORIVA_ELEMENT_TEXT_CHANGED", payload },
         "*",
       );
+      window.parent.postMessage(
+        { type: "KORIVA_INLINE_EDIT_END", payload: { id: editingId } },
+        "*",
+      );
       window.dispatchEvent(
         new CustomEvent("koriva:element", { detail: payload }),
       );
@@ -589,6 +593,7 @@ export function KorivaLivePreview() {
       sel?.removeAllRanges();
       sel?.addRange(range);
       setOverlay(null); // hide selection overlay while editing
+      window.parent?.postMessage({ type: 'KORIVA_INLINE_EDIT_START', payload: { id } }, '*');
     };
 
     const onKeyDown = (e: KeyboardEvent) => {

@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { ComparisonTable } from '@/components/ComparisonTable';
-import { DynamicClassesPreview } from '@/components/DynamicClassesPreview';
-import { DynamicPricingPreview } from '@/components/DynamicPricingPreview';
-import { FeatureStateCard } from '@/components/FeatureStateCard';
-import { ModeAwareSection } from '@/components/ModeAwareSection';
-import { SectionHeading } from '@/components/SectionHeading';
-import { StatCounter } from '@/components/StatCounter';
-import { TrainerCard } from '@/components/TrainerCard';
-import { useSiteMode } from '@/components/SiteModeProvider';
-import { WidgetZone } from '@/components/WidgetZone';
+import Link from "next/link";
+import { ComparisonTable } from "@/components/ComparisonTable";
+import { DynamicClassesPreview } from "@/components/DynamicClassesPreview";
+import { DynamicPricingPreview } from "@/components/DynamicPricingPreview";
+import { FeatureStateCard } from "@/components/FeatureStateCard";
+import { ModeAwareSection } from "@/components/ModeAwareSection";
+import { SectionHeading } from "@/components/SectionHeading";
+import { StatCounter } from "@/components/StatCounter";
+import { TrainerCard } from "@/components/TrainerCard";
+import { useSiteMode } from "@/components/SiteModeProvider";
+import { WidgetZone } from "@/components/WidgetZone";
 import {
   comparisonRows,
   facilities,
@@ -24,7 +24,7 @@ import {
   trainingStyles,
   trainers,
   transformations,
-} from '@/lib/site-data';
+} from "@/lib/site-data";
 
 function LiveBadge() {
   return (
@@ -37,26 +37,58 @@ function LiveBadge() {
 
 const scheduleWindows = [
   {
-    label: 'Morning',
-    time: '5:30 – 9:00 AM',
-    classes: ['Strength Express', 'Reformer Pilates', 'Power Yoga', 'Aqua Conditioning'],
+    label: "Morning",
+    time: "5:30 – 9:00 AM",
+    classes: [
+      "Strength Express",
+      "Reformer Pilates",
+      "Power Yoga",
+      "Aqua Conditioning",
+    ],
   },
   {
-    label: 'Midday',
-    time: '12:00 – 1:30 PM',
-    classes: ['Strength Floor Express', 'Aqua Conditioning'],
+    label: "Midday",
+    time: "12:00 – 1:30 PM",
+    classes: ["Strength Floor Express", "Aqua Conditioning"],
   },
   {
-    label: 'Evening',
-    time: '5:30 – 9:00 PM',
-    classes: ['Rhythm Ride', 'Boxing', 'Jiu Jitsu', 'Dance Cardio', 'Power Yoga'],
+    label: "Evening",
+    time: "5:30 – 9:00 PM",
+    classes: [
+      "Rhythm Ride",
+      "Boxing",
+      "Jiu Jitsu",
+      "Dance Cardio",
+      "Power Yoga",
+    ],
   },
 ];
 
 const scheduleHighlights = [
-  { day: 'Mon · Wed · Fri', time: '7:00 AM', name: 'Reformer Pilates', level: 'All Levels', duration: '50 min', capacity: 12 },
-  { day: 'Daily', time: '12:15 PM', name: 'Strength Floor Express', level: 'All Levels', duration: '30 min', capacity: 20 },
-  { day: 'Tue · Thu', time: '7:15 PM', name: 'Boxing Fundamentals', level: 'Beginner', duration: '60 min', capacity: 16 },
+  {
+    day: "Mon · Wed · Fri",
+    time: "7:00 AM",
+    name: "Reformer Pilates",
+    level: "All Levels",
+    duration: "50 min",
+    capacity: 12,
+  },
+  {
+    day: "Daily",
+    time: "12:15 PM",
+    name: "Strength Floor Express",
+    level: "All Levels",
+    duration: "30 min",
+    capacity: 20,
+  },
+  {
+    day: "Tue · Thu",
+    time: "7:15 PM",
+    name: "Boxing Fundamentals",
+    level: "Beginner",
+    duration: "60 min",
+    capacity: 16,
+  },
 ];
 
 export default function HomePage() {
@@ -67,10 +99,16 @@ export default function HomePage() {
       <section className="hero home-hero-v3">
         <div className="container hero-grid">
           <div className="hero-copy">
-            <span data-cg-el="hero_eyebrow" className="kicker">Premium community fitness club</span>
-            <h1 data-cg-el="hero_headline_1">One membership. Eight training worlds. One club to keep you moving.</h1>
+            <span data-cg-el="hero_eyebrow" className="kicker">
+              Premium community fitness club
+            </span>
+            <h1 data-cg-el="hero_headline_1">
+              One membership. Eight training worlds. One club to keep you
+              moving.
+            </h1>
             <p data-cg-el="hero_subtitle">
-              Discover Pilates, Yoga, Aquatics, Boxing, Jiu Jitsu, Dance, Spinning, and high-performance strength training at PulseGym.
+              Discover Pilates, Yoga, Aquatics, Boxing, Jiu Jitsu, Dance,
+              Spinning, and high-performance strength training at PulseGym.
             </p>
             <div className="hero-actions">
               <Link href="/free-trial" className="button button-primary">
@@ -96,7 +134,10 @@ export default function HomePage() {
               <div className="hero-lifestyle-art">
                 <div className="hero-lifestyle-overlay">
                   <h3>Train with structure, variety, and real coaching.</h3>
-                  <p>From early-morning reformer to evening combat sessions, your week stays full of options.</p>
+                  <p>
+                    From early-morning reformer to evening combat sessions, your
+                    week stays full of options.
+                  </p>
                 </div>
               </div>
             </div>
@@ -108,7 +149,11 @@ export default function HomePage() {
         <div className="container metrics-strip-grid">
           {gymStats.map((stat) => (
             <article key={stat.label}>
-              <StatCounter value={stat.value} suffix={stat.suffix} label={stat.label} />
+              <StatCounter
+                value={stat.value}
+                suffix={stat.suffix}
+                label={stat.label}
+              />
             </article>
           ))}
         </div>
@@ -116,14 +161,20 @@ export default function HomePage() {
 
       {/* ── Promo Banners widget ── */}
       <ModeAwareSection mode={mode} className="section-flush">
-        <WidgetZone widget="promo_banners" active={isPulse} label="Live promotional banners">
+        <WidgetZone
+          widget="promo_banners"
+          active={isPulse}
+          label="Live promotional banners"
+        >
           {/* Static fallback banners */}
           <div className="promo-banners-static">
             <div className="promo-banner-slide promo-banner-slide--default">
               <div className="promo-banner-text">
                 <h2>SUMMER CHALLENGE</h2>
                 <p>3 months for the price of 2 — limited spots</p>
-                <a href="/sign-up" className="promo-banner-cta">Join Now</a>
+                <a href="/sign-up" className="promo-banner-cta">
+                  Join Now
+                </a>
               </div>
             </div>
           </div>
@@ -146,17 +197,34 @@ export default function HomePage() {
         <div className="container">
           <SectionHeading
             eyebrow="Training styles"
-            title={isPulse ? 'All training programs — live from your system' : 'Choose your style. Build your week your way.'}
-            description={isPulse ? 'Every training modality your gym offers, connected directly to your CodeGym system.' : 'PulseGym is designed for variety and consistency, so members can train hard, recover smart, and stay engaged year-round.'}
+            title={
+              isPulse
+                ? "All training programs — live from your system"
+                : "Choose your style. Build your week your way."
+            }
+            description={
+              isPulse
+                ? "Every training modality your gym offers, connected directly to your CodeGym system."
+                : "PulseGym is designed for variety and consistency, so members can train hard, recover smart, and stay engaged year-round."
+            }
           />
           {isPulse && <LiveBadge />}
-          <WidgetZone widget="programs" active={isPulse} label="Live training programs">
+          <WidgetZone
+            widget="programs"
+            active={isPulse}
+            label="Live training programs"
+          >
             <div className="training-grid">
               {trainingStyles.map((style) => (
-                <article key={style.name} className={`training-style-card accent-${style.accent}`}>
+                <article
+                  key={style.name}
+                  className={`training-style-card accent-${style.accent}`}
+                >
                   <div
                     className="training-style-visual"
-                    style={{ background: `${style.fallback}, url('${style.image}') center/cover no-repeat` }}
+                    style={{
+                      background: `${style.fallback}, url('${style.image}') center/cover no-repeat`,
+                    }}
                   />
                   <div className="training-style-body">
                     <h3>{style.name}</h3>
@@ -173,16 +241,27 @@ export default function HomePage() {
         <div className="container">
           <SectionHeading
             eyebrow="Featured classes"
-            title={isPulse ? 'Live class highlights from your connected schedule' : 'Featured classes this week'}
+            title={
+              isPulse
+                ? "Live class highlights from your connected schedule"
+                : "Featured classes this week"
+            }
             description={
               isPulse
-                ? 'Class cards show live schedule context, open spots, and availability — connected directly to your CodeGym system.'
-                : 'In Standard mode, classes are showcased as strong static cards to support discovery and conversions.'
+                ? "Class cards show live schedule context, open spots, and availability — connected directly to your CodeGym system."
+                : "In Standard mode, classes are showcased as strong static cards to support discovery and conversions."
             }
           />
           {isPulse && <LiveBadge />}
-          <WidgetZone widget="classes" active={isPulse} label="Live featured classes">
-            <DynamicClassesPreview classes={featuredClasses.slice(0, 4)} mode={mode} />
+          <WidgetZone
+            widget="classes"
+            active={isPulse}
+            label="Live featured classes"
+          >
+            <DynamicClassesPreview
+              classes={featuredClasses.slice(0, 4)}
+              mode={mode}
+            />
           </WidgetZone>
         </div>
       </ModeAwareSection>
@@ -191,11 +270,23 @@ export default function HomePage() {
         <div className="container">
           <SectionHeading
             eyebrow="Class schedule"
-            title={isPulse ? 'Live schedule — updated in real time' : 'Popular sessions this week'}
-            description={isPulse ? 'Connected to your CodeGym system. Classes, times, and availability update automatically.' : 'A look at some of the most popular recurring sessions at PulseGym.'}
+            title={
+              isPulse
+                ? "Live schedule — updated in real time"
+                : "Popular sessions this week"
+            }
+            description={
+              isPulse
+                ? "Connected to your CodeGym system. Classes, times, and availability update automatically."
+                : "A look at some of the most popular recurring sessions at PulseGym."
+            }
           />
           {isPulse && <LiveBadge />}
-          <WidgetZone widget="schedule" active={isPulse} label="Live class schedule">
+          <WidgetZone
+            widget="schedule"
+            active={isPulse}
+            label="Live class schedule"
+          >
             <div className="schedule-highlights">
               {scheduleHighlights.map((s) => (
                 <article key={s.name} className="schedule-highlight-card">
@@ -204,15 +295,21 @@ export default function HomePage() {
                   <div className="schedule-highlight-name">{s.name}</div>
                   <div className="schedule-highlight-meta">
                     <span className="schedule-highlight-chip">{s.level}</span>
-                    <span className="schedule-highlight-chip">{s.duration}</span>
-                    <span className="schedule-highlight-chip">{s.capacity} spots</span>
+                    <span className="schedule-highlight-chip">
+                      {s.duration}
+                    </span>
+                    <span className="schedule-highlight-chip">
+                      {s.capacity} spots
+                    </span>
                   </div>
                 </article>
               ))}
             </div>
           </WidgetZone>
           <div className="schedule-cta">
-            <Link href="/classes" className="button button-ghost">Book a class &rarr;</Link>
+            <Link href="/classes" className="button button-ghost">
+              Book a class &rarr;
+            </Link>
           </div>
         </div>
       </section>
@@ -221,14 +318,22 @@ export default function HomePage() {
         <div className="container">
           <SectionHeading
             eyebrow="Membership plans"
-            title={isPulse ? 'Pricing connected and ready to stay current' : 'Membership options for every training style'}
+            title={
+              isPulse
+                ? "Pricing connected and ready to stay current"
+                : "Membership options for every training style"
+            }
             description={
               isPulse
-                ? 'Pulse-Powered mode shows live pricing directly from your system — no manual updates needed.'
-                : 'Standard mode presents polished, conversion-ready pricing cards for a traditional gym website.'
+                ? "Pulse-Powered mode shows live pricing directly from your system — no manual updates needed."
+                : "Standard mode presents polished, conversion-ready pricing cards for a traditional gym website."
             }
           />
-          <WidgetZone widget="pricing" active={isPulse} label="Live membership pricing">
+          <WidgetZone
+            widget="pricing"
+            active={isPulse}
+            label="Live membership pricing"
+          >
             <DynamicPricingPreview plans={plans} mode={mode} />
           </WidgetZone>
         </div>
@@ -238,11 +343,23 @@ export default function HomePage() {
         <div className="container">
           <SectionHeading
             eyebrow="Coaches"
-            title={isPulse ? 'Live coach profiles from your system' : 'Certified coaches across every zone'}
-            description={isPulse ? 'Coach bios, specialties, and availability — connected directly from your CodeGym system.' : 'PulseGym combines premium facility standards with people-first coaching that members trust.'}
+            title={
+              isPulse
+                ? "Live coach profiles from your system"
+                : "Certified coaches across every zone"
+            }
+            description={
+              isPulse
+                ? "Coach bios, specialties, and availability — connected directly from your CodeGym system."
+                : "PulseGym combines premium facility standards with people-first coaching that members trust."
+            }
           />
           {isPulse && <LiveBadge />}
-          <WidgetZone widget="instructors" active={isPulse} label="Live coach profiles">
+          <WidgetZone
+            widget="instructors"
+            active={isPulse}
+            label="Live coach profiles"
+          >
             <div className="trainers-grid">
               {trainers.map((trainer) => (
                 <TrainerCard key={trainer.name} trainer={trainer} />
@@ -261,7 +378,10 @@ export default function HomePage() {
           />
           <div className="facilities-grid">
             {facilities.map((space) => (
-              <article key={space.name} className={`facility-card accent-${space.accent}`}>
+              <article
+                key={space.name}
+                className={`facility-card accent-${space.accent}`}
+              >
                 <div className="facility-visual" />
                 <div className="facility-body">
                   <h3>{space.name}</h3>
@@ -308,12 +428,19 @@ export default function HomePage() {
             title="Why members stay"
             description="Strong routines are built when coaching, classes, and recovery all work together."
           />
-          <WidgetZone widget="reviews" active={isPulse} label="Live member reviews">
+          <WidgetZone
+            widget="reviews"
+            active={isPulse}
+            label="Live member reviews"
+          >
             <div className="testimonial-grid">
               {testimonials.map((item) => (
                 <article key={item.name} className="testimonial-card">
-                  <div className="testimonial-stars" aria-label={`${item.stars} out of 5 stars`}>
-                    {'\u2605'.repeat(item.stars)}
+                  <div
+                    className="testimonial-stars"
+                    aria-label={`${item.stars} out of 5 stars`}
+                  >
+                    {"\u2605".repeat(item.stars)}
                   </div>
                   <blockquote>&ldquo;{item.quote}&rdquo;</blockquote>
                   <strong>{item.name}</strong>
@@ -334,11 +461,16 @@ export default function HomePage() {
           />
           <div className="transformation-grid">
             {transformations.map((item) => (
-              <article key={item.name} className={`transformation-card accent-${item.accent}`}>
+              <article
+                key={item.name}
+                className={`transformation-card accent-${item.accent}`}
+              >
                 <div className="transformation-result">{item.result}</div>
                 <div className="transformation-meta">
                   <strong>{item.name}</strong>
-                  <span>{item.timeframe} &middot; {item.plan}</span>
+                  <span>
+                    {item.timeframe} &middot; {item.plan}
+                  </span>
                 </div>
                 <p>{item.story}</p>
               </article>
@@ -351,24 +483,42 @@ export default function HomePage() {
         <div className="container">
           <SectionHeading
             eyebrow="Start today"
-            title={isPulse ? 'Ready to start? Claim your free trial.' : 'Take the first step toward your best self.'}
-            description={isPulse ? 'Drop your details and our team will reach out within minutes — and your trial slot gets reserved.' : 'Start with a no-pressure free trial and find your rhythm at PulseGym.'}
+            title={
+              isPulse
+                ? "Ready to start? Claim your free trial."
+                : "Take the first step toward your best self."
+            }
+            description={
+              isPulse
+                ? "Drop your details and our team will reach out within minutes — and your trial slot gets reserved."
+                : "Start with a no-pressure free trial and find your rhythm at PulseGym."
+            }
           />
           {isPulse && <LiveBadge />}
           {/* Pulse: live lead capture widget handles form + automation pipeline */}
           {/* Standard: a clear CTA panel pointing to the free-trial and contact pages */}
-          <WidgetZone widget="lead_capture" active={isPulse} label="Smart lead capture">
+          <WidgetZone
+            widget="lead_capture"
+            active={isPulse}
+            label="Smart lead capture"
+          >
             <div className="cta-banner mt-section-sm">
               <div>
                 <span className="eyebrow">No commitment required</span>
                 <h2>Book your first session free.</h2>
                 <p>
-                  Tell us your goals and preferred schedule on the free-trial page. Our team will match you with the right coach and class within 24 hours.
+                  Tell us your goals and preferred schedule on the free-trial
+                  page. Our team will match you with the right coach and class
+                  within 24 hours.
                 </p>
               </div>
               <div className="hero-actions">
-                <Link href="/free-trial" className="button button-primary">Start Free Trial</Link>
-                <Link href="/contact" className="button button-ghost">Talk to the team</Link>
+                <Link href="/free-trial" className="button button-primary">
+                  Start Free Trial
+                </Link>
+                <Link href="/contact" className="button button-ghost">
+                  Talk to the team
+                </Link>
               </div>
             </div>
           </WidgetZone>
@@ -386,8 +536,12 @@ export default function HomePage() {
             <div className="location-grid">
               <div className="location-map-art">
                 <div className="location-map-inner">
-                  <span className="location-address-big">{site.addressLine1}</span>
-                  <span className="location-address-sub">{site.addressLine2}</span>
+                  <span className="location-address-big">
+                    {site.addressLine1}
+                  </span>
+                  <span className="location-address-sub">
+                    {site.addressLine2}
+                  </span>
                 </div>
               </div>
               <div className="location-details">
@@ -397,18 +551,29 @@ export default function HomePage() {
                 </div>
                 <div className="location-detail-item">
                   <strong>Parking</strong>
-                  <p>Free covered parking for 150+ vehicles. Overflow surface lot adjacent to the building.</p>
+                  <p>
+                    Free covered parking for 150+ vehicles. Overflow surface lot
+                    adjacent to the building.
+                  </p>
                 </div>
                 <div className="location-detail-item">
                   <strong>Transit</strong>
-                  <p>2 minutes from Lehi TRAX station. Bike lanes on Garibaldi Way with secure bike storage at entry.</p>
+                  <p>
+                    2 minutes from Lehi TRAX station. Bike lanes on Garibaldi
+                    Way with secure bike storage at entry.
+                  </p>
                 </div>
                 <div className="location-detail-item">
                   <strong>Accessibility</strong>
-                  <p>ADA-compliant entry, elevators, and accessible locker rooms across all floors.</p>
+                  <p>
+                    ADA-compliant entry, elevators, and accessible locker rooms
+                    across all floors.
+                  </p>
                 </div>
                 <div className="location-actions">
-                  <Link href="/contact" className="button button-ghost">Get directions &rarr;</Link>
+                  <Link href="/contact" className="button button-ghost">
+                    Get directions &rarr;
+                  </Link>
                 </div>
               </div>
             </div>
@@ -421,11 +586,15 @@ export default function HomePage() {
           <div className="cta-banner">
             <div>
               <span className="eyebrow">Next step</span>
-              <h2>Try PulseGym and feel the difference between static and connected experiences.</h2>
+              <h2>
+                Try PulseGym and feel the difference between static and
+                connected experiences.
+              </h2>
               <p>
                 {isPulse
-                  ? 'Pulse enhancements active: ' + pulseEnhancements.join(' · ')
-                  : 'Start with the Standard Website and switch to Pulse-Powered mode any time using the website mode toggle.'}
+                  ? "Pulse enhancements active: " +
+                    pulseEnhancements.join(" · ")
+                  : "Start with the Standard Website and switch to Pulse-Powered mode any time using the website mode toggle."}
               </p>
             </div>
             <div className="hero-actions">
