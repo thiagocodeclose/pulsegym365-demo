@@ -67,9 +67,9 @@ export default function HomePage() {
       <section className="hero home-hero-v3">
         <div className="container hero-grid">
           <div className="hero-copy">
-            <span className="kicker">Premium community fitness club</span>
-            <h1>One membership. Eight training worlds. One club to keep you moving.</h1>
-            <p>
+            <span data-cg-el="hero_eyebrow" className="kicker">Premium community fitness club</span>
+            <h1 data-cg-el="hero_headline_1">One membership. Eight training worlds. One club to keep you moving.</h1>
+            <p data-cg-el="hero_subtitle">
               Discover Pilates, Yoga, Aquatics, Boxing, Jiu Jitsu, Dance, Spinning, and high-performance strength training at PulseGym.
             </p>
             <div className="hero-actions">
